@@ -503,6 +503,88 @@
   .empty-state h3{font-family:'Fraunces', serif; color:var(--ink); margin:0 0 8px}
   .hidden{display:none !important}
 
+  /* ===== PROFIT CHECK ===== */
+  .profit-grid{
+    display:grid;
+    grid-template-columns:minmax(260px, 1.15fr) minmax(260px, .85fr);
+    gap:16px;
+    align-items:stretch;
+  }
+  .profit-score{
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:18px;
+    background:linear-gradient(135deg, #f7fbf9 0%, #ffffff 70%);
+  }
+  .profit-score.warn{
+    background:linear-gradient(135deg, var(--warn-soft) 0%, #ffffff 70%);
+    border-color:#f5c6c0;
+  }
+  .profit-status{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:5px 10px;
+    border-radius:999px;
+    background:var(--brand-soft);
+    color:var(--brand);
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:12px;
+  }
+  .profit-score.warn .profit-status{background:var(--warn-soft); color:var(--warn)}
+  .profit-main{
+    font-family:'Fraunces', serif;
+    font-size:34px;
+    font-weight:700;
+    line-height:1;
+    color:var(--ink);
+  }
+  .profit-main.warn{color:var(--warn)}
+  .profit-sub{font-size:13px; color:var(--ink-3); margin-top:8px}
+  .profit-lines{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));
+    gap:10px;
+    margin-top:16px;
+  }
+  .profit-line{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:10px;
+    background:#fff;
+  }
+  .profit-line span{display:block; font-size:11px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em; font-weight:700}
+  .profit-line strong{display:block; margin-top:4px; font-size:15px; color:var(--ink)}
+  .profit-line.warn strong{color:var(--warn)}
+  .profit-controls{
+    display:grid;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    gap:12px;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:16px;
+    background:#fff;
+  }
+  .profit-controls .field input{text-align:right}
+  .profit-answer-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+    gap:10px;
+    margin-top:14px;
+  }
+  .profit-answer{
+    border:1px solid var(--line);
+    border-radius:8px;
+    padding:12px;
+    background:#fff;
+  }
+  .profit-answer span{display:block; font-size:11px; font-weight:800; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em}
+  .profit-answer strong{display:block; margin-top:4px; font-size:16px; color:var(--ink)}
+  .profit-answer.warn strong{color:var(--warn)}
+  .profit-answer.good strong{color:var(--brand)}
+  .profit-month-wrap{margin-top:16px}
+
   /* ===== MONTHLY TABLE ===== */
   .growth-up{color:var(--brand); font-weight:600}
   .growth-down{color:var(--warn); font-weight:600}
@@ -576,6 +658,9 @@
     .trading-chart-wrap{height:390px}
     .trading-topbar{height:auto; padding:12px; align-items:flex-start; flex-direction:column}
     .ohlc-strip{flex-wrap:wrap}
+    .profit-grid{grid-template-columns:1fr}
+    .profit-lines{grid-template-columns:1fr}
+    .profit-controls{grid-template-columns:1fr}
     .filters-grid{grid-template-columns:repeat(2, 1fr)}
     .kpi-grid{grid-template-columns:repeat(2, 1fr)}
     .kpi-value{font-size:20px}
@@ -686,6 +771,101 @@
 
     <!-- KPI -->
     <div class="kpi-grid" id="kpiGrid"></div>
+
+    <!-- PROFIT CHECK -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Cek Boncos Owner</h2>
+          <div class="section-sub">Analisis tanpa diskon: omzet, uang masuk, piutang, biaya operasional, margin, dan titik impas</div>
+        </div>
+      </div>
+      <div class="profit-grid">
+        <div class="profit-score" id="profitScore">
+          <div class="profit-status" id="profitStatus">Menunggu data</div>
+          <div class="profit-main" id="profitNet">—</div>
+          <div class="profit-sub" id="profitNote">Data sedang dimuat.</div>
+          <div class="profit-lines">
+            <div class="profit-line"><span>Omzet</span><strong id="profitRevenue">—</strong></div>
+            <div class="profit-line"><span>Uang Masuk / Lunas</span><strong id="profitCashIn">—</strong></div>
+            <div class="profit-line"><span>Estimasi Biaya</span><strong id="profitCost">—</strong></div>
+            <div class="profit-line"><span>Piutang Belum Lunas</span><strong id="profitReceivable">—</strong></div>
+            <div class="profit-line"><span>Margin Bersih</span><strong id="profitMargin">—</strong></div>
+            <div class="profit-line"><span>Biaya per KG</span><strong id="profitCostPerKg">—</strong></div>
+            <div class="profit-line"><span>Omzet per KG</span><strong id="profitRevenuePerKg">—</strong></div>
+            <div class="profit-line"><span>Rata-rata per TRX</span><strong id="profitAvgTrx">—</strong></div>
+          </div>
+          <div class="profit-answer-grid" id="profitAnswerGrid"></div>
+        </div>
+        <div class="profit-controls">
+          <div class="field">
+            <label>Gaji Karyawan</label>
+            <input type="number" class="cost-input" id="salaryCostInput" value="9000000" min="0" step="100000" />
+          </div>
+          <div class="field">
+            <label>Listrik</label>
+            <input type="number" class="cost-input" id="electricityCostInput" value="1500000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Air</label>
+            <input type="number" class="cost-input" id="waterCostInput" value="800000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Detergen</label>
+            <input type="number" class="cost-input" id="detergentCostInput" value="1800000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Parfum</label>
+            <input type="number" class="cost-input" id="perfumeCostInput" value="700000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Plastik / Packaging</label>
+            <input type="number" class="cost-input" id="packagingCostInput" value="600000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Sewa Tempat</label>
+            <input type="number" class="cost-input" id="rentCostInput" value="2500000" min="0" step="100000" />
+          </div>
+          <div class="field">
+            <label>Maintenance Mesin</label>
+            <input type="number" class="cost-input" id="maintenanceCostInput" value="750000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Transport</label>
+            <input type="number" class="cost-input" id="transportCostInput" value="500000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Biaya Lain-lain</label>
+            <input type="number" class="cost-input" id="otherCostInput" value="1000000" min="0" step="50000" />
+          </div>
+          <div class="field">
+            <label>Target Margin Bersih (%)</label>
+            <input type="number" id="targetMarginInput" value="15" min="0" max="100" step="1" />
+          </div>
+        </div>
+      </div>
+      <div class="profit-month-wrap">
+        <h4 style="font-size:14px; margin:0 0 10px">Diagnosis Bulanan</h4>
+        <div class="table-wrap">
+          <table class="data-table" id="profitMonthTable">
+            <thead>
+              <tr>
+                <th>Bulan</th>
+                <th class="num">Omzet</th>
+                <th class="num">Uang Masuk</th>
+                <th class="num">Piutang</th>
+                <th class="num">Biaya</th>
+                <th class="num">Laba</th>
+                <th class="num">Margin</th>
+                <th>Diagnosis</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
     <!-- INSIGHT -->
     <div class="section">
@@ -1295,6 +1475,7 @@ function applyFilters(){
   const monthlyBaseRaw = filterRaw(monthlyBaseNotas);
 
   renderKPI(fNotas, fRaw);
+  renderProfitCheck(fNotas, fRaw);
   renderMonthly(fNotas, fRaw, monthlyBaseNotas, monthlyBaseRaw);
   renderCustomers(fNotas);
   renderServices(fRaw, fNotas);
@@ -1346,6 +1527,177 @@ function renderKPI(notas, raw){
       <div class="kpi-sub">${k.sub}</div>
     </div>
   `).join("");
+}
+
+document.querySelectorAll(".cost-input, #targetMarginInput").forEach(el => {
+  el.addEventListener("input", applyFilters);
+});
+
+function monthlyOperatingCost(){
+  return Array.from(document.querySelectorAll(".cost-input")).reduce((s, el) => s + toNum(el.value), 0);
+}
+
+function distinctMonthCount(notas){
+  if (!notas.length) return 0;
+  const months = new Set(notas.map(n => n.bulan).filter(Boolean));
+  return Math.max(1, months.size);
+}
+
+function sumKg(raw){
+  return raw.filter(r => r.detSatuan === "KG").reduce((s,r) => s + r.detJumlah, 0);
+}
+
+function renderProfitCheck(notas, raw){
+  const revenue = notas.reduce((s,n) => s + n.total, 0);
+  const cashIn = notas
+    .filter(n => n.bayar === "Lunas")
+    .reduce((s,n) => s + n.total, 0);
+  const receivable = notas
+    .filter(n => n.bayar === "Belum Lunas")
+    .reduce((s,n) => s + n.total, 0);
+  const monthCount = distinctMonthCount(notas);
+  const monthlyCost = monthlyOperatingCost();
+  const totalCost = monthlyCost * monthCount;
+  const targetMargin = Math.min(100, Math.max(0, toNum(document.getElementById("targetMarginInput").value))) / 100;
+  const net = revenue - totalCost;
+  const margin = revenue ? net / revenue : 0;
+  const cashNet = cashIn - totalCost;
+  const kg = sumKg(raw);
+  const costPerKg = kg ? totalCost / kg : 0;
+  const revenuePerKg = kg ? revenue / kg : 0;
+  const avgTrx = notas.length ? revenue / notas.length : 0;
+  const breakEven = totalCost;
+  const breakEvenWithTarget = targetMargin < 1 ? totalCost / (1 - targetMargin) : totalCost;
+  const isLoss = net < 0;
+  const cashBlocked = net >= 0 && cashNet < 0;
+  const underTarget = !isLoss && margin < targetMargin;
+  const score = document.getElementById("profitScore");
+  const status = document.getElementById("profitStatus");
+  const main = document.getElementById("profitNet");
+  const note = document.getElementById("profitNote");
+
+  if (!notas.length){
+    score.classList.remove("warn");
+    main.classList.remove("warn");
+    status.textContent = "Tidak Ada Data";
+    main.textContent = "—";
+    note.textContent = "Sesuaikan filter untuk melihat analisis boncos.";
+    ["profitRevenue","profitCashIn","profitCost","profitReceivable","profitMargin","profitCostPerKg","profitRevenuePerKg","profitAvgTrx"].forEach(id => {
+      document.getElementById(id).textContent = "—";
+    });
+    document.getElementById("profitAnswerGrid").innerHTML = "";
+    renderProfitMonthTable(notas, raw, monthlyCost, targetMargin);
+    return;
+  }
+
+  score.classList.toggle("warn", isLoss || cashBlocked || underTarget);
+  main.classList.toggle("warn", isLoss || cashBlocked || underTarget);
+  status.textContent = isLoss ? "Rugi Beneran" : cashBlocked ? "Cashflow Tersendat" : underTarget ? "Untung Tipis" : "Sehat";
+  main.textContent = fmtIDR(net);
+  note.textContent = isLoss
+    ? `Bisnis rugi secara laba: omzet kurang ${fmtIDR(Math.abs(net))} dari biaya operasional.`
+    : cashBlocked
+      ? `Secara laba masih positif, tapi uang masuk belum cukup menutup biaya. Piutang menahan cashflow sebesar ${fmtIDR(receivable)}.`
+      : `Laba positif dan cashflow menutup biaya. Estimasi margin bersih ${fmtPct(margin).replace("+","")}.`;
+
+  document.getElementById("profitRevenue").textContent = fmtIDR(revenue);
+  document.getElementById("profitCashIn").textContent = fmtIDR(cashIn);
+  document.getElementById("profitCost").textContent = fmtIDR(totalCost);
+  document.getElementById("profitReceivable").textContent = fmtIDR(receivable);
+  document.getElementById("profitMargin").textContent = revenue ? fmtPct(margin).replace("+","") : "—";
+  document.getElementById("profitCostPerKg").textContent = kg ? fmtIDR(costPerKg) : "—";
+  document.getElementById("profitRevenuePerKg").textContent = kg ? fmtIDR(revenuePerKg) : "—";
+  document.getElementById("profitAvgTrx").textContent = fmtIDR(avgTrx);
+  document.getElementById("profitReceivable").parentElement.classList.toggle("warn", receivable > 0);
+
+  const priceTooCheap = kg > 0 && revenuePerKg < (costPerKg / Math.max(0.01, 1 - targetMargin));
+  const answers = [
+    {label:"Rugi atau cashflow?", value:isLoss ? "Rugi beneran" : cashBlocked ? "Cashflow tersendat" : "Tidak boncos", warn:isLoss || cashBlocked, good:!isLoss && !cashBlocked},
+    {label:"Piutang belum masuk", value:fmtIDR(receivable), warn:receivable > 0},
+    {label:"Harga layanan", value:priceTooCheap ? "Terlalu murah" : "Masih masuk", warn:priceTooCheap, good:!priceTooCheap && kg > 0},
+    {label:"Minimal omzet tidak rugi", value:fmtIDR(breakEven)},
+    {label:"Omzet target margin", value:fmtIDR(breakEvenWithTarget)},
+    {label:"Biaya bulanan", value:fmtIDR(monthlyCost)},
+  ];
+  document.getElementById("profitAnswerGrid").innerHTML = answers.map(a => `
+    <div class="profit-answer ${a.warn ? 'warn' : a.good ? 'good' : ''}">
+      <span>${a.label}</span>
+      <strong>${a.value}</strong>
+    </div>
+  `).join("");
+
+  renderProfitMonthTable(notas, raw, monthlyCost, targetMargin);
+}
+
+function aggregateProfitByMonth(notas, raw, monthlyCost){
+  const kgByMonth = new Map();
+  raw.forEach(r => {
+    if (r.bulan && r.detSatuan === "KG") kgByMonth.set(r.bulan, (kgByMonth.get(r.bulan)||0) + r.detJumlah);
+  });
+  const map = new Map();
+  notas.forEach(n => {
+    if (!n.bulan) return;
+    if (!map.has(n.bulan)) map.set(n.bulan, {bulan:n.bulan, revenue:0, cashIn:0, receivable:0, trx:0, kg:0});
+    const m = map.get(n.bulan);
+    m.revenue += n.total;
+    m.trx += 1;
+    if (n.bayar === "Lunas") m.cashIn += n.total;
+    if (n.bayar === "Belum Lunas") m.receivable += n.total;
+  });
+  return Array.from(map.values()).map(m => {
+    m.kg = kgByMonth.get(m.bulan) || 0;
+    m.cost = monthlyCost;
+    m.net = m.revenue - m.cost;
+    m.cashNet = m.cashIn - m.cost;
+    m.margin = m.revenue ? m.net / m.revenue : 0;
+    m.revenuePerKg = m.kg ? m.revenue / m.kg : 0;
+    m.costPerKg = m.kg ? m.cost / m.kg : 0;
+    return m;
+  }).sort((a,b) => MONTH_ORDER.indexOf(a.bulan) - MONTH_ORDER.indexOf(b.bulan));
+}
+
+function renderProfitMonthTable(notas, raw, monthlyCost, targetMargin){
+  const rows = aggregateProfitByMonth(notas, raw, monthlyCost);
+  const best = rows.length ? [...rows].sort((a,b) => b.net - a.net)[0] : null;
+  const worstFeeling = rows.length ? [...rows].sort((a,b) => a.cashNet - b.cashNet)[0] : null;
+  const highRevenueThreshold = rows.length ? rows.reduce((s,m) => s + m.revenue, 0) / rows.length : 0;
+  const tbody = document.querySelector("#profitMonthTable tbody");
+  tbody.innerHTML = rows.map(m => {
+    const cashIssue = m.revenue >= highRevenueThreshold && m.cashNet < 0;
+    const loss = m.net < 0;
+    const thin = !loss && m.margin < targetMargin;
+    const diagnosis = loss
+      ? "Terasa boncos: biaya lebih besar dari omzet"
+      : cashIssue
+        ? "Omzet tinggi tapi cashflow rendah"
+        : thin
+          ? "Untung tipis"
+          : "Sehat";
+    return `
+      <tr>
+        <td style="font-weight:600">${escapeHtml(m.bulan)}</td>
+        <td class="num">${fmtIDR(m.revenue)}</td>
+        <td class="num">${fmtIDR(m.cashIn)}</td>
+        <td class="num ${m.receivable > 0 ? 'growth-down' : ''}">${fmtIDR(m.receivable)}</td>
+        <td class="num">${fmtIDR(m.cost)}</td>
+        <td class="num ${loss ? 'growth-down' : 'growth-up'}">${fmtIDR(m.net)}</td>
+        <td class="num">${fmtPct(m.margin).replace("+","")}</td>
+        <td>${diagnosis}</td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--ink-3)">Tidak ada data bulanan.</td></tr>`;
+
+  if (best || worstFeeling){
+    const extra = [];
+    if (best) extra.push({label:"Bulan paling untung", value:`${best.bulan} · ${fmtIDR(best.net)}`, good:true});
+    if (worstFeeling) extra.push({label:"Bulan terasa boncos", value:`${worstFeeling.bulan} · cashflow ${fmtIDR(worstFeeling.cashNet)}`, warn:worstFeeling.cashNet < 0});
+    document.getElementById("profitAnswerGrid").innerHTML += extra.map(a => `
+      <div class="profit-answer ${a.warn ? 'warn' : a.good ? 'good' : ''}">
+        <span>${a.label}</span>
+        <strong>${a.value}</strong>
+      </div>
+    `).join("");
+  }
 }
 
 /* ============== MONTHLY ============== */
