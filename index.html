@@ -442,16 +442,16 @@
 <div class="upload-bar">
   <div class="upload-card">
     <div class="upload-label">
-      <strong>Unggah file Excel</strong>
-      Pilih <code>mallondri_gabungan.xlsx</code> untuk memuat data.
+      <strong>Data Excel otomatis</strong>
+      Dashboard membaca <code>mallondri_gabungan.xlsx</code> langsung dari server.
     </div>
     <label class="btn btn-primary" for="fileInput">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Pilih File
     </label>
     <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" />
-    <button class="btn btn-ghost btn-sm" id="loadSample">Muat Contoh</button>
-    <div class="file-status" id="fileStatus">Belum ada file dimuat</div>
+    <button class="btn btn-ghost btn-sm" id="loadSample">Muat Ulang Data</button>
+    <div class="file-status" id="fileStatus">Menunggu data server…</div>
   </div>
 </div>
 
@@ -459,7 +459,7 @@
 
   <div id="emptyState" class="empty-state section">
     <h3>Belum ada data</h3>
-    <p>Unggah <strong>mallondri_gabungan.xlsx</strong> untuk mulai menganalisis data laundry.</p>
+    <p>Data dari <strong>mallondri_gabungan.xlsx</strong> sedang dimuat dari server.</p>
   </div>
 
   <div id="dashboard" class="hidden">
@@ -828,6 +828,31 @@ let charts = {};       // chart instances
 let sortState = { key: "rank", dir: "asc" };
 let currentPage = 1;
 let pageSize = 25;
+const DEFAULT_EXCEL_FILE = "mallondri_gabungan.xlsx";
+
+function loadWorkbookBuffer(buffer, sourceLabel){
+  const wb = XLSX.read(buffer, { type: "array" });
+  const sheetName = wb.SheetNames.find(n => /data\s*gabungan/i.test(n)) || wb.SheetNames[0];
+  const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
+  processData(rows);
+  document.getElementById("fileStatus").textContent = "✓ " + sourceLabel + " (" + rows.length + " baris)";
+  document.getElementById("fileStatus").classList.add("loaded");
+}
+
+async function loadServerExcel(){
+  const status = document.getElementById("fileStatus");
+  status.textContent = "Memuat data dari server…";
+  status.classList.remove("loaded");
+  try {
+    const res = await fetch(DEFAULT_EXCEL_FILE, { cache: "no-store" });
+    if (!res.ok) throw new Error("File Excel tidak tersedia di server: " + DEFAULT_EXCEL_FILE);
+    const buf = await res.arrayBuffer();
+    loadWorkbookBuffer(buf, DEFAULT_EXCEL_FILE);
+  } catch(err){
+    console.error(err);
+    status.textContent = err.message + ". Anda masih bisa pilih file manual.";
+  }
+}
 
 /* ============== LOAD ============== */
 document.getElementById("fileInput").addEventListener("change", (e) => {
@@ -837,13 +862,7 @@ document.getElementById("fileInput").addEventListener("change", (e) => {
   const reader = new FileReader();
   reader.onload = (ev) => {
     try {
-      const data = new Uint8Array(ev.target.result);
-      const wb = XLSX.read(data, { type: "array" });
-      const sheetName = wb.SheetNames.find(n => /data\s*gabungan/i.test(n)) || wb.SheetNames[0];
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
-      processData(rows);
-      document.getElementById("fileStatus").textContent = "✓ " + f.name + " (" + rows.length + " baris)";
-      document.getElementById("fileStatus").classList.add("loaded");
+      loadWorkbookBuffer(ev.target.result, f.name);
     } catch(err){
       console.error(err);
       document.getElementById("fileStatus").textContent = "Gagal membaca file: " + err.message;
@@ -852,22 +871,8 @@ document.getElementById("fileInput").addEventListener("change", (e) => {
   reader.readAsArrayBuffer(f);
 });
 
-document.getElementById("loadSample").addEventListener("click", async () => {
-  document.getElementById("fileStatus").textContent = "Memuat data contoh…";
-  try {
-    const res = await fetch("mallondri_gabungan.xlsx");
-    if (!res.ok) throw new Error("File contoh tidak tersedia di server. Silakan unggah file Anda.");
-    const buf = await res.arrayBuffer();
-    const wb = XLSX.read(buf, { type: "array" });
-    const sheetName = wb.SheetNames.find(n => /data\s*gabungan/i.test(n)) || wb.SheetNames[0];
-    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
-    processData(rows);
-    document.getElementById("fileStatus").textContent = "✓ Data contoh dimuat (" + rows.length + " baris)";
-    document.getElementById("fileStatus").classList.add("loaded");
-  } catch(err){
-    document.getElementById("fileStatus").textContent = err.message;
-  }
-});
+document.getElementById("loadSample").addEventListener("click", loadServerExcel);
+loadServerExcel();
 
 /* ============== CLEANING ============== */
 function processData(rows){
