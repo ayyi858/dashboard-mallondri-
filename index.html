@@ -801,43 +801,43 @@
         <div class="profit-controls">
           <div class="field">
             <label>Gaji Karyawan</label>
-            <input type="number" class="cost-input" id="salaryCostInput" value="9000000" min="0" step="100000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="salaryCostInput" value="9.000.000" />
           </div>
           <div class="field">
             <label>Listrik</label>
-            <input type="number" class="cost-input" id="electricityCostInput" value="1500000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="electricityCostInput" value="1.500.000" />
           </div>
           <div class="field">
             <label>Air</label>
-            <input type="number" class="cost-input" id="waterCostInput" value="800000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="waterCostInput" value="800.000" />
           </div>
           <div class="field">
             <label>Detergen</label>
-            <input type="number" class="cost-input" id="detergentCostInput" value="1800000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="detergentCostInput" value="1.800.000" />
           </div>
           <div class="field">
             <label>Parfum</label>
-            <input type="number" class="cost-input" id="perfumeCostInput" value="700000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="perfumeCostInput" value="700.000" />
           </div>
           <div class="field">
             <label>Plastik / Packaging</label>
-            <input type="number" class="cost-input" id="packagingCostInput" value="600000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="packagingCostInput" value="600.000" />
           </div>
           <div class="field">
             <label>Sewa Tempat</label>
-            <input type="number" class="cost-input" id="rentCostInput" value="2500000" min="0" step="100000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="rentCostInput" value="2.500.000" />
           </div>
           <div class="field">
             <label>Maintenance Mesin</label>
-            <input type="number" class="cost-input" id="maintenanceCostInput" value="750000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="maintenanceCostInput" value="750.000" />
           </div>
           <div class="field">
             <label>Transport</label>
-            <input type="number" class="cost-input" id="transportCostInput" value="500000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="transportCostInput" value="500.000" />
           </div>
           <div class="field">
             <label>Biaya Lain-lain</label>
-            <input type="number" class="cost-input" id="otherCostInput" value="1000000" min="0" step="50000" />
+            <input type="text" inputmode="numeric" class="cost-input" id="otherCostInput" value="1.000.000" />
           </div>
           <div class="field">
             <label>Target Margin Bersih (%)</label>
@@ -1529,8 +1529,21 @@ function renderKPI(notas, raw){
   `).join("");
 }
 
-document.querySelectorAll(".cost-input, #targetMarginInput").forEach(el => {
-  el.addEventListener("input", applyFilters);
+function formatThousandsInput(el){
+  const digits = String(el.value || "").replace(/\D/g, "");
+  el.value = digits ? Number(digits).toLocaleString("id-ID") : "";
+}
+
+document.querySelectorAll(".cost-input").forEach(el => {
+  formatThousandsInput(el);
+  el.addEventListener("input", () => {
+    formatThousandsInput(el);
+    applyFilters();
+  });
+});
+
+document.getElementById("targetMarginInput").addEventListener("input", () => {
+  applyFilters();
 });
 
 function monthlyOperatingCost(){
