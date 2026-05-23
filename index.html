@@ -1,0 +1,1777 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mallondri Laundry — Dashboard Analitik</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --brand:#0c5444;
+    --brand-2:#0f6b56;
+    --brand-soft:#e8f3ee;
+    --brand-soft-2:#d4ebe0;
+    --ink:#0e1a16;
+    --ink-2:#3a4a44;
+    --ink-3:#6b7975;
+    --line:#e3ebe7;
+    --bg:#f6f8f6;
+    --card:#ffffff;
+    --warn:#c0392b;
+    --warn-soft:#fdecea;
+    --warn-2:#e67e22;
+    --good:#0c5444;
+    --good-soft:#e8f3ee;
+    --gold:#b8860b;
+    --shadow:0 1px 2px rgba(12,84,68,.04), 0 8px 24px rgba(12,84,68,.06);
+    --shadow-lg:0 4px 12px rgba(12,84,68,.06), 0 24px 48px rgba(12,84,68,.08);
+    --radius:14px;
+    --radius-sm:10px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:'Plus Jakarta Sans', system-ui, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.5;
+  }
+  .display{font-family:'Fraunces', Georgia, serif; font-weight:700; letter-spacing:-.02em}
+
+  /* ===== HEADER ===== */
+  header.top{
+    background:linear-gradient(135deg, #0c5444 0%, #0a3d33 100%);
+    color:#fff;
+    padding:28px 24px 32px;
+    position:relative;
+    overflow:hidden;
+  }
+  header.top::before{
+    content:"";
+    position:absolute; right:-80px; top:-80px;
+    width:300px; height:300px;
+    background:radial-gradient(circle, rgba(255,255,255,.08), transparent 60%);
+    border-radius:50%;
+  }
+  .top-inner{max-width:1400px; margin:0 auto; position:relative; z-index:1}
+  .brand{display:flex; align-items:center; gap:14px; margin-bottom:6px}
+  .brand-mark{
+    width:42px; height:42px; border-radius:12px;
+    background:rgba(255,255,255,.12);
+    display:grid; place-items:center;
+    font-family:'Fraunces', serif; font-weight:700; font-size:22px;
+    border:1px solid rgba(255,255,255,.18);
+  }
+  .brand-name{font-size:13px; opacity:.85; text-transform:uppercase; letter-spacing:.18em; font-weight:600}
+  h1.display{font-size:32px; margin:8px 0 4px; color:#fff}
+  .top-sub{opacity:.85; font-size:14px; max-width:600px}
+
+  /* ===== UPLOAD AREA ===== */
+  .upload-bar{
+    max-width:1400px;
+    margin:-18px auto 0;
+    padding:0 24px;
+    position:relative; z-index:2;
+  }
+  .upload-card{
+    background:#fff;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow-lg);
+    padding:16px 20px;
+    display:flex; align-items:center; gap:14px;
+    flex-wrap:wrap;
+  }
+  .upload-label{
+    flex:1;
+    min-width:200px;
+    font-size:14px;
+    color:var(--ink-2);
+  }
+  .upload-label strong{color:var(--ink); display:block; font-size:15px; margin-bottom:2px}
+  .file-input{display:none}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:10px 18px;
+    border:none;
+    border-radius:10px;
+    font-family:inherit; font-weight:600; font-size:14px;
+    cursor:pointer;
+    transition:transform .15s, box-shadow .15s, background .15s;
+  }
+  .btn-primary{background:var(--brand); color:#fff}
+  .btn-primary:hover{background:var(--brand-2); transform:translateY(-1px); box-shadow:0 4px 12px rgba(12,84,68,.25)}
+  .btn-ghost{background:transparent; color:var(--brand); border:1px solid var(--line)}
+  .btn-ghost:hover{background:var(--brand-soft)}
+  .btn-sm{padding:7px 14px; font-size:13px}
+  .file-status{font-size:13px; color:var(--ink-3); margin-left:auto}
+  .file-status.loaded{color:var(--brand); font-weight:600}
+
+  /* ===== MAIN ===== */
+  main{max-width:1400px; margin:0 auto; padding:24px}
+
+  /* ===== FILTERS ===== */
+  .filters{
+    background:#fff;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:18px 20px;
+    margin-bottom:20px;
+  }
+  .filters-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px;
+    flex-wrap:wrap; gap:10px;
+  }
+  .filters-title{font-weight:700; font-size:15px; display:flex; align-items:center; gap:8px}
+  .filters-title::before{content:""; width:4px; height:18px; background:var(--brand); border-radius:2px}
+  .filters-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));
+    gap:12px;
+  }
+  .field label{
+    display:block;
+    font-size:11px; font-weight:600;
+    color:var(--ink-3);
+    text-transform:uppercase; letter-spacing:.08em;
+    margin-bottom:5px;
+  }
+  .field select, .field input{
+    width:100%;
+    padding:9px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    background:#fff;
+    font-family:inherit; font-size:13.5px;
+    color:var(--ink);
+    transition:border .15s, box-shadow .15s;
+  }
+  .field select:focus, .field input:focus{
+    outline:none;
+    border-color:var(--brand);
+    box-shadow:0 0 0 3px var(--brand-soft);
+  }
+  .date-range{display:flex; gap:8px}
+  .date-range input{flex:1; min-width:0}
+
+  /* ===== KPI ===== */
+  .kpi-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(190px, 1fr));
+    gap:14px;
+    margin-bottom:24px;
+  }
+  .kpi{
+    background:#fff;
+    border-radius:var(--radius);
+    padding:18px 18px 16px;
+    box-shadow:var(--shadow);
+    position:relative; overflow:hidden;
+    border:1px solid transparent;
+    transition:transform .2s, box-shadow .2s;
+  }
+  .kpi:hover{transform:translateY(-2px); box-shadow:var(--shadow-lg)}
+  .kpi::before{
+    content:""; position:absolute; left:0; top:0; bottom:0;
+    width:3px; background:var(--brand);
+  }
+  .kpi-label{
+    font-size:11.5px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--ink-3);
+    margin-bottom:6px;
+  }
+  .kpi-value{
+    font-family:'Fraunces', serif;
+    font-size:26px; font-weight:700;
+    color:var(--ink);
+    line-height:1.15;
+    letter-spacing:-.01em;
+  }
+  .kpi-sub{font-size:12px; color:var(--ink-3); margin-top:4px}
+  .kpi.warn::before{background:var(--warn)}
+  .kpi.warn .kpi-value{color:var(--warn)}
+
+  /* ===== SECTIONS ===== */
+  .section{
+    background:#fff;
+    border-radius:var(--radius);
+    padding:22px;
+    margin-bottom:20px;
+    box-shadow:var(--shadow);
+  }
+  .section-head{
+    display:flex; align-items:flex-end; justify-content:space-between;
+    margin-bottom:18px; gap:12px; flex-wrap:wrap;
+  }
+  .section-title{
+    font-family:'Fraunces', serif;
+    font-weight:700; font-size:22px;
+    color:var(--ink);
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .section-sub{font-size:13px; color:var(--ink-3); margin-top:2px}
+  .accent-line{
+    height:3px; width:36px; background:var(--brand);
+    margin-bottom:6px; border-radius:2px;
+  }
+
+  /* ===== CHART GRID ===== */
+  .chart-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(380px, 1fr));
+    gap:16px;
+  }
+  .chart-box{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    padding:16px;
+  }
+  .chart-box h4{
+    font-size:14px; font-weight:700;
+    margin:0 0 12px;
+    color:var(--ink);
+  }
+  .chart-wrap{position:relative; height:260px}
+  .chart-wrap.tall{height:340px}
+
+  /* ===== INSIGHT ===== */
+  .insight-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));
+    gap:12px;
+  }
+  .insight{
+    background:linear-gradient(135deg, var(--brand-soft) 0%, #f4faf7 100%);
+    border:1px solid var(--brand-soft-2);
+    border-radius:var(--radius-sm);
+    padding:14px 16px;
+  }
+  .insight.warn{
+    background:linear-gradient(135deg, var(--warn-soft) 0%, #fff7f3 100%);
+    border-color:#f5c6c0;
+  }
+  .insight-label{
+    font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.08em;
+    color:var(--brand);
+    margin-bottom:4px;
+  }
+  .insight.warn .insight-label{color:var(--warn)}
+  .insight-value{
+    font-family:'Fraunces', serif;
+    font-size:18px; font-weight:700;
+    color:var(--ink);
+    line-height:1.3;
+  }
+  .insight-detail{font-size:12px; color:var(--ink-2); margin-top:4px}
+
+  /* ===== TABLE ===== */
+  .table-controls{
+    display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .search-input{
+    flex:1; min-width:200px;
+    padding:9px 12px 9px 36px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:inherit; font-size:13.5px;
+    background:#fff url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%236b7975' stroke-width='2.5' stroke-linecap='round'><circle cx='11' cy='11' r='7'/><path d='m20 20-3.5-3.5'/></svg>") 12px center no-repeat;
+  }
+  .search-input:focus{outline:none; border-color:var(--brand); box-shadow:0 0 0 3px var(--brand-soft)}
+  .page-size{
+    padding:9px 12px;
+    border:1px solid var(--line);
+    border-radius:8px;
+    font-family:inherit; font-size:13.5px;
+    background:#fff;
+  }
+  .table-wrap{
+    overflow-x:auto;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+  }
+  table.data-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.5px;
+    min-width:900px;
+  }
+  table.data-table thead{
+    background:linear-gradient(180deg, #f9fbfa 0%, #f3f7f5 100%);
+    position:sticky; top:0; z-index:2;
+  }
+  table.data-table th{
+    text-align:left;
+    padding:11px 14px;
+    font-size:11.5px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.06em;
+    color:var(--ink-2);
+    border-bottom:1px solid var(--line);
+    white-space:nowrap;
+    cursor:pointer;
+    user-select:none;
+  }
+  table.data-table th.sortable:hover{color:var(--brand); background:rgba(12,84,68,.04)}
+  table.data-table th .sort-i{display:inline-block; margin-left:4px; opacity:.4}
+  table.data-table th.sorted-asc .sort-i, table.data-table th.sorted-desc .sort-i{opacity:1; color:var(--brand)}
+  table.data-table td{
+    padding:11px 14px;
+    border-bottom:1px solid #f0f4f2;
+    vertical-align:middle;
+  }
+  table.data-table tbody tr:hover{background:#fafcfb}
+  table.data-table tbody tr:last-child td{border-bottom:none}
+  .rank-cell{
+    font-family:'Fraunces', serif;
+    font-weight:700;
+    font-size:15px;
+    color:var(--brand);
+    width:40px;
+  }
+  .rank-cell.top3{
+    color:var(--gold);
+  }
+  .cust-name{font-weight:600; color:var(--ink)}
+  .num{text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap}
+  .badge{
+    display:inline-block;
+    padding:3px 10px;
+    border-radius:100px;
+    font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.04em;
+  }
+  .badge-vip{background:#fff4d6; color:#8a6500; border:1px solid #f0d680}
+  .badge-loyal{background:var(--brand-soft); color:var(--brand); border:1px solid var(--brand-soft-2)}
+  .badge-potensial{background:#e7f0ff; color:#1e4b9e; border:1px solid #c5d9f7}
+  .badge-baru{background:#f0f2f4; color:#5a6770; border:1px solid #d8dde2}
+
+  .pagination{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-top:14px;
+    gap:10px; flex-wrap:wrap;
+  }
+  .pagination-info{font-size:13px; color:var(--ink-3)}
+  .page-controls{display:flex; gap:6px}
+  .page-btn{
+    padding:6px 12px;
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:7px;
+    cursor:pointer;
+    font-family:inherit; font-size:13px;
+    color:var(--ink-2);
+    transition:all .15s;
+  }
+  .page-btn:hover:not(:disabled){border-color:var(--brand); color:var(--brand)}
+  .page-btn.active{background:var(--brand); color:#fff; border-color:var(--brand)}
+  .page-btn:disabled{opacity:.4; cursor:not-allowed}
+
+  /* ===== EMPTY ===== */
+  .empty-state{
+    text-align:center;
+    padding:60px 20px;
+    color:var(--ink-3);
+  }
+  .empty-state h3{font-family:'Fraunces', serif; color:var(--ink); margin:0 0 8px}
+  .hidden{display:none !important}
+
+  /* ===== MONTHLY TABLE ===== */
+  .growth-up{color:var(--brand); font-weight:600}
+  .growth-down{color:var(--warn); font-weight:600}
+  .growth-flat{color:var(--ink-3)}
+
+  /* ===== FOOTER ===== */
+  footer{
+    text-align:center;
+    padding:24px;
+    color:var(--ink-3);
+    font-size:13px;
+  }
+  footer .display{color:var(--brand); font-size:15px}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px){
+    header.top{padding:22px 16px 28px}
+    h1.display{font-size:24px}
+    main{padding:16px}
+    .upload-bar{padding:0 16px}
+    .filters-grid{grid-template-columns:repeat(2, 1fr)}
+    .kpi-grid{grid-template-columns:repeat(2, 1fr)}
+    .kpi-value{font-size:20px}
+    .section{padding:16px}
+    .section-title{font-size:18px}
+    .chart-grid{grid-template-columns:1fr}
+    .chart-wrap{height:240px}
+    .insight-grid{grid-template-columns:1fr}
+    .pagination{justify-content:center}
+    .pagination-info{width:100%; text-align:center}
+  }
+  @media (max-width: 460px){
+    .filters-grid{grid-template-columns:1fr}
+    .kpi-grid{grid-template-columns:1fr 1fr}
+    .kpi-value{font-size:18px}
+    .upload-card{flex-direction:column; align-items:stretch}
+    .file-status{margin-left:0; text-align:center}
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <div class="brand-mark">M</div>
+      <div>
+        <div class="brand-name">Mallondri Laundry</div>
+      </div>
+    </div>
+    <h1 class="display">Dashboard Analitik Pelanggan &amp; Performa</h1>
+    <div class="top-sub">Pantau pelanggan setia, performa bulanan, dan layanan terlaris dari satu tempat.</div>
+  </div>
+</header>
+
+<div class="upload-bar">
+  <div class="upload-card">
+    <div class="upload-label">
+      <strong>Unggah file Excel</strong>
+      Pilih <code>mallondri_gabungan.xlsx</code> untuk memuat data.
+    </div>
+    <label class="btn btn-primary" for="fileInput">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Pilih File
+    </label>
+    <input type="file" id="fileInput" class="file-input" accept=".xlsx,.xls" />
+    <button class="btn btn-ghost btn-sm" id="loadSample">Muat Contoh</button>
+    <div class="file-status" id="fileStatus">Belum ada file dimuat</div>
+  </div>
+</div>
+
+<main>
+
+  <div id="emptyState" class="empty-state section">
+    <h3>Belum ada data</h3>
+    <p>Unggah <strong>mallondri_gabungan.xlsx</strong> untuk mulai menganalisis data laundry.</p>
+  </div>
+
+  <div id="dashboard" class="hidden">
+
+    <!-- FILTERS -->
+    <div class="filters">
+      <div class="filters-head">
+        <div class="filters-title">Filter Data</div>
+        <button class="btn btn-ghost btn-sm" id="resetFilters">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset Filter
+        </button>
+      </div>
+      <div class="filters-grid">
+        <div class="field">
+          <label>Bulan</label>
+          <select id="fBulan"><option value="">Semua</option></select>
+        </div>
+        <div class="field">
+          <label>Outlet</label>
+          <select id="fOutlet"><option value="">Semua</option></select>
+        </div>
+        <div class="field">
+          <label>Jenis</label>
+          <select id="fJenis"><option value="">Semua</option></select>
+        </div>
+        <div class="field">
+          <label>Layanan</label>
+          <select id="fLayanan"><option value="">Semua</option></select>
+        </div>
+        <div class="field">
+          <label>Status Bayar</label>
+          <select id="fBayar"><option value="">Semua</option></select>
+        </div>
+        <div class="field">
+          <label>Status Ambil</label>
+          <select id="fAmbil"><option value="">Semua</option></select>
+        </div>
+        <div class="field">
+          <label>Customer</label>
+          <select id="fCustomer"><option value="">Semua</option></select>
+        </div>
+        <div class="field">
+          <label>Rentang Tanggal Terima</label>
+          <div class="date-range">
+            <input type="date" id="fDateFrom" />
+            <input type="date" id="fDateTo" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI -->
+    <div class="kpi-grid" id="kpiGrid"></div>
+
+    <!-- INSIGHT -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Insight Otomatis</h2>
+          <div class="section-sub">Ringkasan temuan utama dari data yang sedang difilter</div>
+        </div>
+      </div>
+      <div class="insight-grid" id="insightGrid"></div>
+    </div>
+
+    <!-- PERFORMA BULANAN -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Performa Bulanan</h2>
+          <div class="section-sub">Tren omzet, transaksi, dan pelanggan dari waktu ke waktu</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h4>Omzet per Bulan</h4>
+          <div class="chart-wrap"><canvas id="chartOmzet"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Jumlah Transaksi per Bulan</h4>
+          <div class="chart-wrap"><canvas id="chartTrx"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Customer Unik per Bulan</h4>
+          <div class="chart-wrap"><canvas id="chartCust"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Total KG &amp; Item per Bulan</h4>
+          <div class="chart-wrap"><canvas id="chartKgItem"></canvas></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <h4 style="font-size:14px; margin:0 0 10px">Tabel Performa Bulanan</h4>
+        <div class="table-wrap">
+          <table class="data-table" id="monthlyTable">
+            <thead>
+              <tr>
+                <th>Bulan</th>
+                <th class="num">Omzet</th>
+                <th class="num">Transaksi</th>
+                <th class="num">Customer</th>
+                <th class="num">Rata-rata</th>
+                <th class="num">Total KG</th>
+                <th class="num">Total Item</th>
+                <th class="num">Growth Omzet</th>
+                <th class="num">Growth Trx</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOP 100 PELANGGAN -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Top 100 Pelanggan Paling Sering Order</h2>
+          <div class="section-sub">Diurutkan berdasarkan jumlah transaksi unik. Klik header untuk sortir.</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" id="exportCSV">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Export CSV
+        </button>
+      </div>
+
+      <div class="table-controls">
+        <input type="text" class="search-input" id="custSearch" placeholder="Cari nama pelanggan, nomor telepon, atau alamat..." />
+        <select class="page-size" id="pageSize">
+          <option value="10">10 baris</option>
+          <option value="25" selected>25 baris</option>
+          <option value="50">50 baris</option>
+          <option value="100">100 baris</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table" id="custTable">
+          <thead>
+            <tr>
+              <th class="sortable" data-sort="rank">Rank <span class="sort-i">↕</span></th>
+              <th class="sortable" data-sort="name">Customer <span class="sort-i">↕</span></th>
+              <th>No Telp</th>
+              <th>Alamat</th>
+              <th class="num sortable" data-sort="trx">Trx <span class="sort-i">↕</span></th>
+              <th class="num sortable" data-sort="omzet">Omzet <span class="sort-i">↕</span></th>
+              <th class="num sortable" data-sort="kg">KG <span class="sort-i">↕</span></th>
+              <th class="num sortable" data-sort="item">Item <span class="sort-i">↕</span></th>
+              <th class="num">Avg</th>
+              <th class="sortable" data-sort="last">Terakhir <span class="sort-i">↕</span></th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+
+      <div class="pagination">
+        <div class="pagination-info" id="paginationInfo"></div>
+        <div class="page-controls" id="pageControls"></div>
+      </div>
+    </div>
+
+    <!-- VISUALISASI CUSTOMER -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Analisis Pelanggan</h2>
+          <div class="section-sub">Pelanggan teratas dan distribusi loyalitas</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h4>Top 10 Pelanggan (Jumlah Transaksi)</h4>
+          <div class="chart-wrap tall"><canvas id="chartTopTrx"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Top 10 Pelanggan (Total Omzet)</h4>
+          <div class="chart-wrap tall"><canvas id="chartTopOmzet"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Distribusi Loyalitas Pelanggan</h4>
+          <div class="chart-wrap"><canvas id="chartLoyalty"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYANAN -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Analisis Layanan</h2>
+          <div class="section-sub">Layanan paling laku dan kontribusinya pada omzet</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h4>Top 10 Layanan (Frekuensi Pemakaian)</h4>
+          <div class="chart-wrap tall"><canvas id="chartLayananFreq"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Top 10 Layanan (Omzet)</h4>
+          <div class="chart-wrap tall"><canvas id="chartLayananOmzet"></canvas></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px">
+        <div class="table-wrap">
+          <table class="data-table" id="serviceTable">
+            <thead>
+              <tr>
+                <th>Layanan</th>
+                <th class="num">Frekuensi</th>
+                <th class="num">Total Omzet</th>
+                <th class="num">Total KG</th>
+                <th class="num">Total Item</th>
+                <th class="num">Rata-rata/Pakai</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- STATUS BAYAR & AMBIL -->
+    <div class="section">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Status Pembayaran &amp; Pengambilan</h2>
+          <div class="section-sub">Komposisi pembayaran lunas dan order yang sudah diambil</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h4>Status Pembayaran</h4>
+          <div class="chart-wrap"><canvas id="chartBayar"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Status Pengambilan</h4>
+          <div class="chart-wrap"><canvas id="chartAmbil"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OUTLET -->
+    <div class="section" id="outletSection">
+      <div class="section-head">
+        <div>
+          <div class="accent-line"></div>
+          <h2 class="section-title">Performa Outlet</h2>
+          <div class="section-sub">Perbandingan omzet, transaksi, dan customer per outlet</div>
+        </div>
+      </div>
+      <div class="chart-grid">
+        <div class="chart-box">
+          <h4>Omzet per Outlet</h4>
+          <div class="chart-wrap"><canvas id="chartOutletOmzet"></canvas></div>
+        </div>
+        <div class="chart-box">
+          <h4>Transaksi per Outlet</h4>
+          <div class="chart-wrap"><canvas id="chartOutletTrx"></canvas></div>
+        </div>
+      </div>
+      <div style="margin-top:18px">
+        <div class="table-wrap">
+          <table class="data-table" id="outletTable">
+            <thead>
+              <tr>
+                <th>Outlet</th>
+                <th class="num">Omzet</th>
+                <th class="num">Transaksi</th>
+                <th class="num">Customer Unik</th>
+                <th class="num">Rata-rata/Trx</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+<footer>
+  <span class="display">Mallondri Laundry</span> · Dashboard Analitik
+</footer>
+
+<script>
+/* =================================================================
+   MALLONDRI LAUNDRY DASHBOARD
+   - Baca file XLSX di browser pakai SheetJS
+   - Cleaning sesuai spesifikasi (No Nota unik = 1 transaksi, dst)
+   - Render KPI, chart, tabel, insight - semua reaktif terhadap filter
+   ================================================================= */
+
+const fmtIDR = (v) => "Rp " + (Math.round(v||0)).toLocaleString("id-ID");
+const fmtIDRShort = (v) => {
+  v = v||0;
+  if (Math.abs(v) >= 1e9) return "Rp " + (v/1e9).toFixed(2) + " M";
+  if (Math.abs(v) >= 1e6) return "Rp " + (v/1e6).toFixed(2) + " Jt";
+  if (Math.abs(v) >= 1e3) return "Rp " + (v/1e3).toFixed(1) + " Rb";
+  return "Rp " + Math.round(v).toLocaleString("id-ID");
+};
+const fmtNum = (v) => (v||0).toLocaleString("id-ID");
+const fmtNum1 = (v) => (Math.round((v||0)*10)/10).toLocaleString("id-ID");
+const fmtPct = (v) => {
+  if (v === null || v === undefined || !isFinite(v)) return "—";
+  const s = v >= 0 ? "+" : "";
+  return s + (v*100).toFixed(1) + "%";
+};
+
+// Bulan urutan kanonis
+const MONTH_ORDER = ["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const MONTH_MAP_SHORT = {Jan:0,Feb:1,Mar:2,Apr:3,Mei:4,May:4,Jun:5,Jul:6,Agu:7,Aug:7,Sep:8,Okt:9,Oct:9,Nov:10,Des:11,Dec:11};
+
+// Parser tanggal "31 Jan 2026 19:36" → Date
+function parseTgl(s){
+  if (!s || s === "-" || s === "") return null;
+  if (s instanceof Date) return s;
+  const str = String(s).trim();
+  const m = str.match(/^(\d{1,2})\s+(\w{3})\w*\s+(\d{4})(?:\s+(\d{1,2}):(\d{2}))?/);
+  if (!m) return null;
+  const day = +m[1];
+  const mon = MONTH_MAP_SHORT[m[2]];
+  if (mon === undefined) return null;
+  const yr = +m[3];
+  const hh = +(m[4]||0);
+  const mm = +(m[5]||0);
+  return new Date(yr, mon, day, hh, mm);
+}
+
+function toNum(v){
+  if (v === null || v === undefined || v === "") return 0;
+  if (typeof v === "number") return v;
+  const s = String(v).replace(/[^\d.,-]/g, "").replace(/\./g, "").replace(",", ".");
+  const n = parseFloat(s);
+  return isNaN(n) ? 0 : n;
+}
+
+function normalizeName(s){
+  if (!s) return "";
+  return String(s).trim().toLowerCase().replace(/\s+/g, " ");
+}
+function displayName(s){
+  if (!s) return "";
+  return String(s).trim().replace(/\s+/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+}
+
+/* ============== STATE ============== */
+let RAW = [];          // semua baris detail (cleaned)
+let NOTAS = [];        // 1 row per No Nota
+let CUSTOMERS = [];    // agregasi per customer
+let charts = {};       // chart instances
+let sortState = { key: "rank", dir: "asc" };
+let currentPage = 1;
+let pageSize = 25;
+
+/* ============== LOAD ============== */
+document.getElementById("fileInput").addEventListener("change", (e) => {
+  const f = e.target.files[0];
+  if (!f) return;
+  document.getElementById("fileStatus").textContent = "Memuat: " + f.name + "…";
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = new Uint8Array(ev.target.result);
+      const wb = XLSX.read(data, { type: "array" });
+      const sheetName = wb.SheetNames.find(n => /data\s*gabungan/i.test(n)) || wb.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
+      processData(rows);
+      document.getElementById("fileStatus").textContent = "✓ " + f.name + " (" + rows.length + " baris)";
+      document.getElementById("fileStatus").classList.add("loaded");
+    } catch(err){
+      console.error(err);
+      document.getElementById("fileStatus").textContent = "Gagal membaca file: " + err.message;
+    }
+  };
+  reader.readAsArrayBuffer(f);
+});
+
+document.getElementById("loadSample").addEventListener("click", async () => {
+  document.getElementById("fileStatus").textContent = "Memuat data contoh…";
+  try {
+    const res = await fetch("mallondri_gabungan.xlsx");
+    if (!res.ok) throw new Error("File contoh tidak tersedia di server. Silakan unggah file Anda.");
+    const buf = await res.arrayBuffer();
+    const wb = XLSX.read(buf, { type: "array" });
+    const sheetName = wb.SheetNames.find(n => /data\s*gabungan/i.test(n)) || wb.SheetNames[0];
+    const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], { defval: "" });
+    processData(rows);
+    document.getElementById("fileStatus").textContent = "✓ Data contoh dimuat (" + rows.length + " baris)";
+    document.getElementById("fileStatus").classList.add("loaded");
+  } catch(err){
+    document.getElementById("fileStatus").textContent = err.message;
+  }
+});
+
+/* ============== CLEANING ============== */
+function processData(rows){
+  // 1. Bersihkan + parse semua field
+  const cleaned = rows.map(r => {
+    const noNota = String(r["No Nota"] || "").trim();
+    if (!noNota) return null;
+    return {
+      bulan: String(r["Bulan"] || "").trim(),
+      noNota,
+      customer: String(r["Customer"] || "").trim(),
+      customerKey: normalizeName(r["Customer"]),
+      customerDisp: displayName(r["Customer"]),
+      noTelp: String(r["No Telp Customer"] || "").trim(),
+      alamat: String(r["Alamat Customer"] || "").trim(),
+      progres: String(r["Progres Pengerjaan"] || "").trim(),
+      outlet: String(r["Outlet"] || "").trim() || "Tidak diketahui",
+      tglTerima: parseTgl(r["Tgl Terima"]),
+      tglTerimaRaw: r["Tgl Terima"],
+      tglSelesai: parseTgl(r["Tgl Selesai"]),
+      tglAmbil: parseTgl(r["Tgl Pengambilan"]),
+      subtotal: toNum(r["Subtotal"]),
+      total: toNum(r["Total Tagihan"]),
+      jenis: String(r["Jenis"] || "").trim() || "Reguler",
+      bayar: String(r["Pembayaran"] || "").trim(),
+      ambil: String(r["Pengambilan"] || "").trim(),
+      detJenis: String(r["Detail - Jenis"] || "").trim(),
+      detNama: String(r["Detail - Nama"] || "").trim(),
+      detJumlah: toNum(r["Detail - Jumlah"]),
+      detSatuan: String(r["Detail - Satuan"] || "").trim().toUpperCase(),
+      detTotal: toNum(r["Detail - Total"]),
+      detItem: toNum(r["Detail - Jumlah Item"]),
+    };
+  }).filter(x => x !== null);
+
+  // 2. Group by noNota → propagasi Total Tagihan, ambil header dari baris pertama yg punya info
+  const byNota = new Map();
+  cleaned.forEach(r => {
+    if (!byNota.has(r.noNota)) byNota.set(r.noNota, []);
+    byNota.get(r.noNota).push(r);
+  });
+
+  byNota.forEach((rowsOfNota) => {
+    // Total tagihan: ambil max (karena hanya 1 baris yg punya), fallback subtotal
+    let totalNota = Math.max(...rowsOfNota.map(r => r.total));
+    if (!totalNota) totalNota = rowsOfNota.reduce((s,r) => s + r.subtotal, 0);
+    // Header info: ambil dari baris dengan customer terisi
+    const header = rowsOfNota.find(r => r.customer) || rowsOfNota[0];
+    rowsOfNota.forEach(r => {
+      r.total = totalNota;
+      // propagasi info header utk baris detail yg kosong
+      if (!r.customer) r.customer = header.customer;
+      if (!r.customerKey) r.customerKey = header.customerKey;
+      if (!r.customerDisp) r.customerDisp = header.customerDisp;
+      if (!r.noTelp) r.noTelp = header.noTelp;
+      if (!r.alamat) r.alamat = header.alamat;
+      if (!r.outlet) r.outlet = header.outlet;
+      if (!r.tglTerima) r.tglTerima = header.tglTerima;
+      if (!r.bulan) r.bulan = header.bulan;
+      if (!r.bayar) r.bayar = header.bayar;
+      if (!r.ambil) r.ambil = header.ambil;
+    });
+  });
+
+  RAW = cleaned;
+
+  // 3. NOTAS = 1 row per noNota (untuk metrik level transaksi)
+  NOTAS = Array.from(byNota.values()).map(rowsOfNota => {
+    const h = rowsOfNota.find(r => r.customer) || rowsOfNota[0];
+    const kg = rowsOfNota.filter(r => r.detSatuan === "KG").reduce((s,r) => s + r.detJumlah, 0);
+    const item = rowsOfNota.reduce((s,r) => s + r.detItem, 0);
+    return {
+      noNota: h.noNota,
+      bulan: h.bulan,
+      customer: h.customerDisp || h.customer || "(tanpa nama)",
+      customerKey: h.customerKey || normalizeName(h.customer),
+      noTelp: h.noTelp,
+      alamat: h.alamat,
+      outlet: h.outlet,
+      tglTerima: h.tglTerima,
+      jenis: h.jenis,
+      bayar: h.bayar,
+      ambil: h.ambil,
+      total: h.total,
+      kg, item,
+      layanan: rowsOfNota.map(r => r.detNama).filter(Boolean)
+    };
+  });
+
+  // Populate filter options
+  populateFilters();
+
+  // Initial render
+  document.getElementById("emptyState").classList.add("hidden");
+  document.getElementById("dashboard").classList.remove("hidden");
+  applyFilters();
+}
+
+/* ============== FILTERS ============== */
+function uniqueSorted(arr){
+  return Array.from(new Set(arr.filter(Boolean))).sort();
+}
+function uniqueMonths(arr){
+  const months = Array.from(new Set(arr.filter(Boolean)));
+  return months.sort((a,b) => MONTH_ORDER.indexOf(a) - MONTH_ORDER.indexOf(b));
+}
+
+function populateFilters(){
+  const fill = (id, opts) => {
+    const sel = document.getElementById(id);
+    sel.innerHTML = '<option value="">Semua</option>';
+    opts.forEach(o => sel.innerHTML += `<option value="${o.replace(/"/g,'&quot;')}">${o}</option>`);
+  };
+  fill("fBulan", uniqueMonths(NOTAS.map(n => n.bulan)));
+  fill("fOutlet", uniqueSorted(NOTAS.map(n => n.outlet)));
+  fill("fJenis", uniqueSorted(NOTAS.map(n => n.jenis)));
+  fill("fBayar", uniqueSorted(NOTAS.map(n => n.bayar)));
+  fill("fAmbil", uniqueSorted(NOTAS.map(n => n.ambil)));
+  fill("fLayanan", uniqueSorted(RAW.map(r => r.detNama)));
+
+  // Customer: top 200 berdasar frekuensi agar dropdown tetap workable
+  const custCount = new Map();
+  NOTAS.forEach(n => {
+    if (!n.customerKey) return;
+    custCount.set(n.customerKey, (custCount.get(n.customerKey)||0) + 1);
+  });
+  const custOpts = Array.from(custCount.entries())
+    .sort((a,b) => b[1]-a[1])
+    .slice(0, 300)
+    .map(([k]) => {
+      const n = NOTAS.find(x => x.customerKey === k);
+      return n ? n.customer : k;
+    });
+  fill("fCustomer", custOpts);
+
+  // Date range hints
+  const dates = NOTAS.map(n => n.tglTerima).filter(Boolean).sort((a,b) => a-b);
+  if (dates.length){
+    const fmt = d => d.toISOString().slice(0,10);
+    document.getElementById("fDateFrom").min = fmt(dates[0]);
+    document.getElementById("fDateFrom").max = fmt(dates[dates.length-1]);
+    document.getElementById("fDateTo").min = fmt(dates[0]);
+    document.getElementById("fDateTo").max = fmt(dates[dates.length-1]);
+  }
+
+  // Bind events
+  ["fBulan","fOutlet","fJenis","fLayanan","fBayar","fAmbil","fCustomer","fDateFrom","fDateTo"].forEach(id => {
+    document.getElementById(id).addEventListener("change", applyFilters);
+  });
+}
+
+document.getElementById("resetFilters").addEventListener("click", () => {
+  ["fBulan","fOutlet","fJenis","fLayanan","fBayar","fAmbil","fCustomer"].forEach(id => document.getElementById(id).value = "");
+  document.getElementById("fDateFrom").value = "";
+  document.getElementById("fDateTo").value = "";
+  document.getElementById("custSearch").value = "";
+  applyFilters();
+});
+
+function getFilters(){
+  return {
+    bulan: document.getElementById("fBulan").value,
+    outlet: document.getElementById("fOutlet").value,
+    jenis: document.getElementById("fJenis").value,
+    layanan: document.getElementById("fLayanan").value,
+    bayar: document.getElementById("fBayar").value,
+    ambil: document.getElementById("fAmbil").value,
+    customer: document.getElementById("fCustomer").value,
+    dateFrom: document.getElementById("fDateFrom").value ? new Date(document.getElementById("fDateFrom").value) : null,
+    dateTo: document.getElementById("fDateTo").value ? new Date(document.getElementById("fDateTo").value + "T23:59:59") : null,
+  };
+}
+
+function filterNotas(){
+  const f = getFilters();
+  // Filter layanan butuh cek di NOTAS.layanan array
+  return NOTAS.filter(n => {
+    if (f.bulan && n.bulan !== f.bulan) return false;
+    if (f.outlet && n.outlet !== f.outlet) return false;
+    if (f.jenis && n.jenis !== f.jenis) return false;
+    if (f.bayar && n.bayar !== f.bayar) return false;
+    if (f.ambil && n.ambil !== f.ambil) return false;
+    if (f.customer && n.customer !== f.customer) return false;
+    if (f.layanan && !n.layanan.includes(f.layanan)) return false;
+    if (f.dateFrom && (!n.tglTerima || n.tglTerima < f.dateFrom)) return false;
+    if (f.dateTo && (!n.tglTerima || n.tglTerima > f.dateTo)) return false;
+    return true;
+  });
+}
+
+function filterRaw(filteredNotas){
+  const noNotaSet = new Set(filteredNotas.map(n => n.noNota));
+  const f = getFilters();
+  return RAW.filter(r => {
+    if (!noNotaSet.has(r.noNota)) return false;
+    // jika filter layanan aktif, hanya tampilkan baris detail yg sesuai (untuk grafik layanan)
+    if (f.layanan && r.detNama !== f.layanan) return false;
+    return true;
+  });
+}
+
+/* ============== MAIN RENDER ============== */
+function applyFilters(){
+  const fNotas = filterNotas();
+  const fRaw = filterRaw(fNotas);
+
+  renderKPI(fNotas, fRaw);
+  renderMonthly(fNotas, fRaw);
+  renderCustomers(fNotas);
+  renderServices(fRaw, fNotas);
+  renderStatus(fNotas);
+  renderOutlets(fNotas);
+  renderInsights(fNotas, fRaw);
+
+  currentPage = 1;
+  renderTopTable();
+}
+
+/* ============== KPI ============== */
+function renderKPI(notas, raw){
+  const omzet = notas.reduce((s,n) => s + n.total, 0);
+  const trx = notas.length;
+  const custUnik = new Set(notas.map(n => n.customerKey)).size;
+  const avg = trx > 0 ? omzet/trx : 0;
+  const kg = raw.filter(r => r.detSatuan === "KG").reduce((s,r) => s + r.detJumlah, 0);
+  // Total item: hindari double-count detail row → pakai sum unik per nota
+  const itemMap = new Map();
+  raw.forEach(r => {
+    const k = r.noNota + "|" + r.detNama + "|" + r.detSatuan;
+    if (!itemMap.has(k)) itemMap.set(k, r.detItem);
+  });
+  const item = Array.from(itemMap.values()).reduce((s,v) => s+v, 0);
+
+  const lunas = notas.filter(n => n.bayar === "Lunas").length;
+  const belumLunas = notas.filter(n => n.bayar === "Belum Lunas").length;
+  const sudahAmbil = notas.filter(n => n.ambil === "Diambil Semua").length;
+  const belumAmbil = notas.filter(n => n.ambil === "Belum Diambil").length;
+
+  const kpis = [
+    {label:"Total Omzet", value:fmtIDRShort(omzet), sub:fmtIDR(omzet)},
+    {label:"Total Transaksi", value:fmtNum(trx), sub:"No Nota unik"},
+    {label:"Customer Unik", value:fmtNum(custUnik), sub:"Setelah normalisasi nama"},
+    {label:"Rata-rata Omzet", value:fmtIDRShort(avg), sub:"per transaksi"},
+    {label:"Total KG", value:fmtNum1(kg) + " kg", sub:"Dari satuan KG"},
+    {label:"Total Item", value:fmtNum(item), sub:"Jumlah item dilayani"},
+    {label:"Transaksi Lunas", value:fmtNum(lunas), sub:trx ? ((lunas/trx*100).toFixed(1)+"%") : "—"},
+    {label:"Belum Lunas", value:fmtNum(belumLunas), sub:trx ? ((belumLunas/trx*100).toFixed(1)+"%") : "—", warn:belumLunas>0},
+    {label:"Sudah Diambil", value:fmtNum(sudahAmbil), sub:trx ? ((sudahAmbil/trx*100).toFixed(1)+"%") : "—"},
+    {label:"Belum Diambil", value:fmtNum(belumAmbil), sub:trx ? ((belumAmbil/trx*100).toFixed(1)+"%") : "—", warn:belumAmbil>0},
+  ];
+  const grid = document.getElementById("kpiGrid");
+  grid.innerHTML = kpis.map(k => `
+    <div class="kpi ${k.warn ? 'warn':''}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>
+  `).join("");
+}
+
+/* ============== MONTHLY ============== */
+function aggregateByMonth(notas, raw){
+  const map = new Map();
+  notas.forEach(n => {
+    if (!n.bulan) return;
+    if (!map.has(n.bulan)) map.set(n.bulan, {bulan:n.bulan, omzet:0, trx:0, custSet:new Set(), kg:0, item:0});
+    const m = map.get(n.bulan);
+    m.omzet += n.total;
+    m.trx += 1;
+    if (n.customerKey) m.custSet.add(n.customerKey);
+  });
+  // KG & item per bulan dari raw (dengan dedupe item per nota+layanan)
+  const seenItem = new Set();
+  raw.forEach(r => {
+    if (!r.bulan) return;
+    if (!map.has(r.bulan)) return;
+    const m = map.get(r.bulan);
+    if (r.detSatuan === "KG") m.kg += r.detJumlah;
+    const itemKey = r.noNota + "|" + r.detNama + "|" + r.detSatuan;
+    if (!seenItem.has(itemKey)){
+      seenItem.add(itemKey);
+      m.item += r.detItem;
+    }
+  });
+  const arr = Array.from(map.values())
+    .map(m => ({...m, cust: m.custSet.size, avg: m.trx ? m.omzet/m.trx : 0}))
+    .sort((a,b) => MONTH_ORDER.indexOf(a.bulan) - MONTH_ORDER.indexOf(b.bulan));
+  // growth
+  arr.forEach((m,i) => {
+    if (i===0){ m.growthOmzet=null; m.growthTrx=null; m.growthCust=null; return; }
+    const prev = arr[i-1];
+    m.growthOmzet = prev.omzet ? (m.omzet-prev.omzet)/prev.omzet : null;
+    m.growthTrx = prev.trx ? (m.trx-prev.trx)/prev.trx : null;
+    m.growthCust = prev.cust ? (m.cust-prev.cust)/prev.cust : null;
+  });
+  return arr;
+}
+
+function renderMonthly(notas, raw){
+  const months = aggregateByMonth(notas, raw);
+  const labels = months.map(m => m.bulan);
+
+  upsertChart("chartOmzet", {
+    type: "line",
+    data: {
+      labels,
+      datasets: [{
+        label: "Omzet",
+        data: months.map(m => m.omzet),
+        borderColor: "#0c5444",
+        backgroundColor: "rgba(12,84,68,.12)",
+        tension: .35,
+        fill: true,
+        pointRadius: 5,
+        pointBackgroundColor: "#0c5444",
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+      }]
+    },
+    options: lineChartOpts(v => fmtIDRShort(v))
+  });
+
+  upsertChart("chartTrx", {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Transaksi",
+        data: months.map(m => m.trx),
+        backgroundColor: "#0c5444",
+        borderRadius: 6,
+      }]
+    },
+    options: barChartOpts(v => fmtNum(v))
+  });
+
+  upsertChart("chartCust", {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        label: "Customer Unik",
+        data: months.map(m => m.cust),
+        backgroundColor: "#1a8a6e",
+        borderRadius: 6,
+      }]
+    },
+    options: barChartOpts(v => fmtNum(v))
+  });
+
+  upsertChart("chartKgItem", {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [
+        {label:"KG", data:months.map(m => m.kg), backgroundColor:"#0c5444", borderRadius:5, yAxisID:"y"},
+        {label:"Item", data:months.map(m => m.item), backgroundColor:"#b8860b", borderRadius:5, yAxisID:"y1"}
+      ]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:true, position:"top", labels:{font:{family:"Plus Jakarta Sans", size:12}}}, tooltip: tooltipStyle() },
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{family:"Plus Jakarta Sans"}}},
+        y:{position:"left", grid:{color:"#eef2f0"}, ticks:{font:{family:"Plus Jakarta Sans"}, callback:v => fmtNum(v)+" kg"}},
+        y1:{position:"right", grid:{display:false}, ticks:{font:{family:"Plus Jakarta Sans"}, callback:v => fmtNum(v)+" item"}}
+      }
+    }
+  });
+
+  // Tabel performa bulanan
+  const tbody = document.querySelector("#monthlyTable tbody");
+  tbody.innerHTML = months.map(m => {
+    const gO = formatGrowth(m.growthOmzet);
+    const gT = formatGrowth(m.growthTrx);
+    return `
+      <tr>
+        <td style="font-weight:600">${m.bulan}</td>
+        <td class="num">${fmtIDR(m.omzet)}</td>
+        <td class="num">${fmtNum(m.trx)}</td>
+        <td class="num">${fmtNum(m.cust)}</td>
+        <td class="num">${fmtIDR(m.avg)}</td>
+        <td class="num">${fmtNum1(m.kg)} kg</td>
+        <td class="num">${fmtNum(m.item)}</td>
+        <td class="num ${gO.cls}">${gO.txt}</td>
+        <td class="num ${gT.cls}">${gT.txt}</td>
+      </tr>
+    `;
+  }).join("");
+}
+
+function formatGrowth(v){
+  if (v === null || v === undefined || !isFinite(v)) return {txt:"—", cls:"growth-flat"};
+  const cls = v > 0.001 ? "growth-up" : v < -0.001 ? "growth-down" : "growth-flat";
+  const arrow = v > 0.001 ? "▲" : v < -0.001 ? "▼" : "—";
+  return {txt: arrow + " " + fmtPct(v).replace("+",""), cls};
+}
+
+/* ============== CUSTOMERS ============== */
+function aggregateCustomers(notas){
+  const map = new Map();
+  notas.forEach(n => {
+    if (!n.customerKey) return;
+    if (!map.has(n.customerKey)) map.set(n.customerKey, {
+      key:n.customerKey, name:n.customer, noTelp:"", alamat:"",
+      trx:0, omzet:0, kg:0, item:0, last:null
+    });
+    const c = map.get(n.customerKey);
+    c.trx += 1;
+    c.omzet += n.total;
+    c.kg += n.kg;
+    c.item += n.item;
+    if (n.tglTerima && (!c.last || n.tglTerima > c.last)) c.last = n.tglTerima;
+    if (n.noTelp && !c.noTelp) c.noTelp = n.noTelp;
+    if (n.alamat && n.alamat !== "-" && !c.alamat) c.alamat = n.alamat;
+  });
+  const arr = Array.from(map.values());
+  arr.forEach(c => {
+    c.avg = c.trx ? c.omzet/c.trx : 0;
+    c.status = c.trx >= 10 ? "VIP" : c.trx >= 5 ? "Loyal" : c.trx >= 2 ? "Potensial" : "Baru";
+  });
+  arr.sort((a,b) => b.trx - a.trx || b.omzet - a.omzet);
+  arr.forEach((c,i) => c.rank = i+1);
+  return arr;
+}
+
+function renderCustomers(notas){
+  CUSTOMERS = aggregateCustomers(notas);
+  const top10Trx = CUSTOMERS.slice(0, 10);
+  const top10Omzet = [...CUSTOMERS].sort((a,b) => b.omzet - a.omzet).slice(0, 10);
+
+  upsertChart("chartTopTrx", {
+    type: "bar",
+    data: {
+      labels: top10Trx.map(c => c.name.length > 22 ? c.name.slice(0,22)+"…" : c.name),
+      datasets: [{
+        label:"Transaksi",
+        data: top10Trx.map(c => c.trx),
+        backgroundColor: top10Trx.map((_,i) => i < 3 ? "#b8860b" : "#0c5444"),
+        borderRadius: 5,
+      }]
+    },
+    options: horizontalBarOpts(v => fmtNum(v))
+  });
+
+  upsertChart("chartTopOmzet", {
+    type: "bar",
+    data: {
+      labels: top10Omzet.map(c => c.name.length > 22 ? c.name.slice(0,22)+"…" : c.name),
+      datasets: [{
+        label:"Omzet",
+        data: top10Omzet.map(c => c.omzet),
+        backgroundColor: top10Omzet.map((_,i) => i < 3 ? "#b8860b" : "#0c5444"),
+        borderRadius: 5,
+      }]
+    },
+    options: horizontalBarOpts(v => fmtIDRShort(v))
+  });
+
+  // Loyalty distribution
+  const loyalty = {VIP:0, Loyal:0, Potensial:0, Baru:0};
+  CUSTOMERS.forEach(c => loyalty[c.status]++);
+  upsertChart("chartLoyalty", {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(loyalty),
+      datasets: [{
+        data: Object.values(loyalty),
+        backgroundColor: ["#b8860b","#0c5444","#1e4b9e","#8c99a3"],
+        borderWidth: 3,
+        borderColor: "#fff",
+      }]
+    },
+    options: doughnutOpts()
+  });
+}
+
+/* ============== TOP TABLE ============== */
+function renderTopTable(){
+  const q = document.getElementById("custSearch").value.toLowerCase().trim();
+  let list = CUSTOMERS.slice(0, 100);
+  if (q) {
+    list = list.filter(c =>
+      c.name.toLowerCase().includes(q) ||
+      (c.noTelp && c.noTelp.toLowerCase().includes(q)) ||
+      (c.alamat && c.alamat.toLowerCase().includes(q))
+    );
+  }
+  // sort
+  const {key, dir} = sortState;
+  const factor = dir === "asc" ? 1 : -1;
+  list = [...list].sort((a,b) => {
+    let av, bv;
+    switch(key){
+      case "rank": av=a.rank; bv=b.rank; break;
+      case "name": av=a.name.toLowerCase(); bv=b.name.toLowerCase(); return av.localeCompare(bv)*factor;
+      case "trx": av=a.trx; bv=b.trx; break;
+      case "omzet": av=a.omzet; bv=b.omzet; break;
+      case "kg": av=a.kg; bv=b.kg; break;
+      case "item": av=a.item; bv=b.item; break;
+      case "last": av=a.last?a.last.getTime():0; bv=b.last?b.last.getTime():0; break;
+      default: av=a.rank; bv=b.rank;
+    }
+    return (av-bv)*factor;
+  });
+
+  pageSize = parseInt(document.getElementById("pageSize").value) || 25;
+  const totalPages = Math.max(1, Math.ceil(list.length / pageSize));
+  if (currentPage > totalPages) currentPage = totalPages;
+  const start = (currentPage-1) * pageSize;
+  const slice = list.slice(start, start + pageSize);
+
+  const tbody = document.querySelector("#custTable tbody");
+  tbody.innerHTML = slice.map(c => {
+    const badge = "badge-" + c.status.toLowerCase();
+    const rankCls = c.rank <= 3 ? "rank-cell top3" : "rank-cell";
+    const last = c.last ? c.last.toLocaleDateString("id-ID", {day:"2-digit", month:"short", year:"numeric"}) : "—";
+    return `
+      <tr>
+        <td class="${rankCls}">#${c.rank}</td>
+        <td><div class="cust-name">${escapeHtml(c.name)}</div></td>
+        <td>${escapeHtml(c.noTelp || "—")}</td>
+        <td>${escapeHtml(c.alamat || "—")}</td>
+        <td class="num">${fmtNum(c.trx)}</td>
+        <td class="num">${fmtIDR(c.omzet)}</td>
+        <td class="num">${fmtNum1(c.kg)}</td>
+        <td class="num">${fmtNum(c.item)}</td>
+        <td class="num">${fmtIDR(c.avg)}</td>
+        <td>${last}</td>
+        <td><span class="badge ${badge}">${c.status}</span></td>
+      </tr>
+    `;
+  }).join("") || `<tr><td colspan="11" style="text-align:center; padding:30px; color:var(--ink-3)">Tidak ada pelanggan yang cocok dengan filter/pencarian.</td></tr>`;
+
+  // pagination
+  document.getElementById("paginationInfo").textContent =
+    list.length ? `Menampilkan ${start+1}–${Math.min(start+pageSize, list.length)} dari ${list.length} pelanggan` : "Tidak ada data";
+
+  const pc = document.getElementById("pageControls");
+  pc.innerHTML = "";
+  const mkBtn = (label, page, disabled=false, active=false) => {
+    const b = document.createElement("button");
+    b.className = "page-btn" + (active ? " active":"");
+    b.textContent = label;
+    b.disabled = disabled;
+    if (!disabled && !active) b.onclick = () => { currentPage = page; renderTopTable(); };
+    pc.appendChild(b);
+  };
+  mkBtn("‹", currentPage-1, currentPage===1);
+  const range = pageWindow(currentPage, totalPages, 5);
+  range.forEach(p => mkBtn(p, p, false, p===currentPage));
+  mkBtn("›", currentPage+1, currentPage===totalPages);
+
+  // sort indicator
+  document.querySelectorAll("#custTable th.sortable").forEach(th => {
+    th.classList.remove("sorted-asc","sorted-desc");
+    if (th.dataset.sort === sortState.key){
+      th.classList.add(sortState.dir === "asc" ? "sorted-asc" : "sorted-desc");
+      th.querySelector(".sort-i").textContent = sortState.dir === "asc" ? "▲" : "▼";
+    } else {
+      th.querySelector(".sort-i").textContent = "↕";
+    }
+  });
+}
+
+function pageWindow(cur, total, size){
+  const half = Math.floor(size/2);
+  let start = Math.max(1, cur - half);
+  let end = Math.min(total, start + size - 1);
+  start = Math.max(1, end - size + 1);
+  const arr = [];
+  for (let i=start; i<=end; i++) arr.push(i);
+  return arr;
+}
+
+document.getElementById("custSearch").addEventListener("input", () => { currentPage=1; renderTopTable(); });
+document.getElementById("pageSize").addEventListener("change", () => { currentPage=1; renderTopTable(); });
+
+document.querySelectorAll("#custTable th.sortable").forEach(th => {
+  th.addEventListener("click", () => {
+    const key = th.dataset.sort;
+    if (sortState.key === key) sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
+    else { sortState.key = key; sortState.dir = (key === "rank" || key === "name") ? "asc" : "desc"; }
+    renderTopTable();
+  });
+});
+
+/* ============== EXPORT ============== */
+document.getElementById("exportCSV").addEventListener("click", () => {
+  const list = CUSTOMERS.slice(0, 100);
+  const headers = ["Rank","Customer","No Telp","Alamat","Jumlah Transaksi","Total Omzet","Total KG","Total Item","Rata-rata Omzet","Transaksi Terakhir","Status Loyalitas"];
+  const rows = list.map(c => [
+    c.rank,
+    `"${(c.name||"").replace(/"/g,'""')}"`,
+    `"${(c.noTelp||"").replace(/"/g,'""')}"`,
+    `"${(c.alamat||"").replace(/"/g,'""')}"`,
+    c.trx,
+    Math.round(c.omzet),
+    (Math.round(c.kg*100)/100),
+    c.item,
+    Math.round(c.avg),
+    c.last ? c.last.toISOString().slice(0,10) : "",
+    c.status
+  ].join(","));
+  const csv = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n");
+  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "top_100_pelanggan_mallondri.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+});
+
+/* ============== SERVICES ============== */
+function renderServices(raw, notas){
+  const map = new Map();
+  // total omzet per layanan dari detTotal (level detail)
+  raw.forEach(r => {
+    if (!r.detNama) return;
+    if (!map.has(r.detNama)) map.set(r.detNama, {nama:r.detNama, freq:0, omzet:0, kg:0, item:0});
+    const s = map.get(r.detNama);
+    s.freq += 1;
+    s.omzet += r.detTotal;
+    if (r.detSatuan === "KG") s.kg += r.detJumlah;
+    s.item += r.detItem;
+  });
+  const arr = Array.from(map.values()).sort((a,b) => b.freq - a.freq);
+
+  const topFreq = arr.slice(0, 10);
+  upsertChart("chartLayananFreq", {
+    type:"bar",
+    data:{
+      labels: topFreq.map(s => s.nama),
+      datasets:[{label:"Frekuensi", data: topFreq.map(s => s.freq), backgroundColor:"#0c5444", borderRadius:5}]
+    },
+    options: horizontalBarOpts(v => fmtNum(v))
+  });
+
+  const topOmzet = [...arr].sort((a,b) => b.omzet - a.omzet).slice(0, 10);
+  upsertChart("chartLayananOmzet", {
+    type:"bar",
+    data:{
+      labels: topOmzet.map(s => s.nama),
+      datasets:[{label:"Omzet", data: topOmzet.map(s => s.omzet), backgroundColor:"#1a8a6e", borderRadius:5}]
+    },
+    options: horizontalBarOpts(v => fmtIDRShort(v))
+  });
+
+  const tbody = document.querySelector("#serviceTable tbody");
+  tbody.innerHTML = arr.slice(0, 20).map(s => `
+    <tr>
+      <td style="font-weight:600">${escapeHtml(s.nama)}</td>
+      <td class="num">${fmtNum(s.freq)}</td>
+      <td class="num">${fmtIDR(s.omzet)}</td>
+      <td class="num">${s.kg ? fmtNum1(s.kg)+" kg" : "—"}</td>
+      <td class="num">${fmtNum(s.item)}</td>
+      <td class="num">${fmtIDR(s.freq ? s.omzet/s.freq : 0)}</td>
+    </tr>
+  `).join("") || `<tr><td colspan="6" style="text-align:center; padding:24px; color:var(--ink-3)">Tidak ada data layanan.</td></tr>`;
+}
+
+/* ============== STATUS ============== */
+function renderStatus(notas){
+  const bayar = {};
+  notas.forEach(n => { const k = n.bayar || "Tidak diketahui"; bayar[k] = (bayar[k]||0)+1; });
+  upsertChart("chartBayar", {
+    type:"doughnut",
+    data:{
+      labels: Object.keys(bayar),
+      datasets:[{
+        data: Object.values(bayar),
+        backgroundColor: Object.keys(bayar).map(k => k === "Lunas" ? "#0c5444" : k === "Belum Lunas" ? "#c0392b" : "#8c99a3"),
+        borderWidth: 3, borderColor: "#fff",
+      }]
+    },
+    options: doughnutOpts(notas, n => n.total)
+  });
+
+  const ambil = {};
+  notas.forEach(n => { const k = n.ambil || "Tidak diketahui"; ambil[k] = (ambil[k]||0)+1; });
+  upsertChart("chartAmbil", {
+    type:"doughnut",
+    data:{
+      labels: Object.keys(ambil),
+      datasets:[{
+        data: Object.values(ambil),
+        backgroundColor: Object.keys(ambil).map(k => k === "Diambil Semua" ? "#0c5444" : k === "Belum Diambil" ? "#e67e22" : "#8c99a3"),
+        borderWidth: 3, borderColor: "#fff",
+      }]
+    },
+    options: doughnutOpts()
+  });
+}
+
+/* ============== OUTLETS ============== */
+function renderOutlets(notas){
+  const map = new Map();
+  notas.forEach(n => {
+    const k = n.outlet || "Tidak diketahui";
+    if (!map.has(k)) map.set(k, {outlet:k, omzet:0, trx:0, custSet:new Set()});
+    const o = map.get(k);
+    o.omzet += n.total;
+    o.trx += 1;
+    if (n.customerKey) o.custSet.add(n.customerKey);
+  });
+  const arr = Array.from(map.values()).map(o => ({...o, cust:o.custSet.size, avg: o.trx?o.omzet/o.trx:0})).sort((a,b) => b.omzet - a.omzet);
+
+  // Jika hanya 1 outlet, sembunyikan section
+  if (arr.length <= 1) {
+    document.getElementById("outletSection").style.opacity = ".75";
+  } else {
+    document.getElementById("outletSection").style.opacity = "1";
+  }
+
+  upsertChart("chartOutletOmzet", {
+    type:"bar",
+    data:{labels:arr.map(o => o.outlet), datasets:[{label:"Omzet", data:arr.map(o => o.omzet), backgroundColor:"#0c5444", borderRadius:5}]},
+    options: barChartOpts(v => fmtIDRShort(v))
+  });
+  upsertChart("chartOutletTrx", {
+    type:"bar",
+    data:{labels:arr.map(o => o.outlet), datasets:[{label:"Transaksi", data:arr.map(o => o.trx), backgroundColor:"#1a8a6e", borderRadius:5}]},
+    options: barChartOpts(v => fmtNum(v))
+  });
+
+  const tbody = document.querySelector("#outletTable tbody");
+  tbody.innerHTML = arr.map(o => `
+    <tr>
+      <td style="font-weight:600">${escapeHtml(o.outlet)}</td>
+      <td class="num">${fmtIDR(o.omzet)}</td>
+      <td class="num">${fmtNum(o.trx)}</td>
+      <td class="num">${fmtNum(o.cust)}</td>
+      <td class="num">${fmtIDR(o.avg)}</td>
+    </tr>
+  `).join("");
+}
+
+/* ============== INSIGHTS ============== */
+function renderInsights(notas, raw){
+  const months = aggregateByMonth(notas, raw);
+  const insights = [];
+
+  // Top customer
+  const custs = aggregateCustomers(notas);
+  if (custs.length){
+    insights.push({
+      label:"Pelanggan Paling Setia",
+      value: custs[0].name,
+      detail: `${custs[0].trx} transaksi · ${fmtIDR(custs[0].omzet)}`
+    });
+    const byOmzet = [...custs].sort((a,b) => b.omzet - a.omzet);
+    insights.push({
+      label:"Omzet Pelanggan Tertinggi",
+      value: byOmzet[0].name,
+      detail: `${fmtIDR(byOmzet[0].omzet)} dari ${byOmzet[0].trx} transaksi`
+    });
+  }
+
+  // Bulan
+  if (months.length){
+    const omzetMax = [...months].sort((a,b) => b.omzet - a.omzet)[0];
+    const omzetMin = [...months].sort((a,b) => a.omzet - b.omzet)[0];
+    insights.push({label:"Bulan Omzet Tertinggi", value: omzetMax.bulan, detail: fmtIDR(omzetMax.omzet) + " · " + fmtNum(omzetMax.trx) + " transaksi"});
+    if (months.length > 1) insights.push({label:"Bulan Omzet Terendah", value: omzetMin.bulan, detail: fmtIDR(omzetMin.omzet), warn:true});
+
+    // Growth tertinggi / terendah
+    const withGrowth = months.filter(m => m.growthOmzet !== null && isFinite(m.growthOmzet));
+    if (withGrowth.length){
+      const up = [...withGrowth].sort((a,b) => b.growthOmzet - a.growthOmzet)[0];
+      const down = [...withGrowth].sort((a,b) => a.growthOmzet - b.growthOmzet)[0];
+      if (up.growthOmzet > 0) insights.push({label:"Kenaikan Terbesar", value: up.bulan, detail: fmtPct(up.growthOmzet) + " dibanding bulan sebelumnya"});
+      if (down.growthOmzet < 0) insights.push({label:"Penurunan Terbesar", value: down.bulan, detail: fmtPct(down.growthOmzet) + " dibanding bulan sebelumnya", warn:true});
+    }
+
+    // Trend
+    if (months.length >= 2){
+      const last = months[months.length-1];
+      const prev = months[months.length-2];
+      const trend = last.omzet > prev.omzet ? "naik" : last.omzet < prev.omzet ? "turun" : "stabil";
+      insights.push({label:"Tren Terkini", value:`Omzet ${trend}`, detail:`${prev.bulan} → ${last.bulan} : ${fmtPct(last.growthOmzet)}`, warn: trend==="turun"});
+    }
+  }
+
+  // Layanan
+  const svcMap = new Map();
+  raw.forEach(r => { if (r.detNama){ svcMap.set(r.detNama, (svcMap.get(r.detNama)||0)+1); } });
+  const topSvc = [...svcMap.entries()].sort((a,b) => b[1]-a[1])[0];
+  if (topSvc) insights.push({label:"Layanan Paling Laku", value: topSvc[0], detail: fmtNum(topSvc[1]) + "× pemakaian"});
+
+  // Pembayaran dominan
+  const lunas = notas.filter(n => n.bayar === "Lunas").length;
+  if (notas.length){
+    const pct = lunas/notas.length;
+    insights.push({label:"Status Pembayaran", value: pct >= 0.8 ? "Dominan Lunas" : pct >= 0.5 ? "Mayoritas Lunas" : "Banyak Belum Lunas", detail:`${(pct*100).toFixed(1)}% lunas dari ${fmtNum(notas.length)} transaksi`, warn: pct < 0.5});
+  }
+
+  // VIP
+  const vipCount = custs.filter(c => c.status === "VIP").length;
+  if (vipCount > 0) insights.push({label:"Customer VIP", value: fmtNum(vipCount) + " pelanggan", detail:"Berikan promo loyalitas untuk mereka"});
+
+  // Belum diambil warning
+  const belumAmbil = notas.filter(n => n.ambil === "Belum Diambil").length;
+  if (belumAmbil > 0) insights.push({label:"Order Belum Diambil", value: fmtNum(belumAmbil) + " transaksi", detail:"Pertimbangkan kirim pengingat ke pelanggan", warn:true});
+
+  const grid = document.getElementById("insightGrid");
+  grid.innerHTML = insights.map(i => `
+    <div class="insight ${i.warn ? 'warn':''}">
+      <div class="insight-label">${i.label}</div>
+      <div class="insight-value">${escapeHtml(String(i.value))}</div>
+      <div class="insight-detail">${escapeHtml(i.detail||"")}</div>
+    </div>
+  `).join("");
+}
+
+/* ============== CHART HELPERS ============== */
+function tooltipStyle(){
+  return {
+    backgroundColor: "rgba(14,26,22,.95)",
+    titleFont: {family:"Plus Jakarta Sans", weight:"700", size:13},
+    bodyFont: {family:"Plus Jakarta Sans", size:12},
+    padding: 12,
+    cornerRadius: 8,
+    boxPadding: 4,
+    titleColor: "#fff",
+    bodyColor: "#e3ebe7",
+  };
+}
+function lineChartOpts(fmt){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tooltipStyle(), callbacks:{label: ctx => fmt(ctx.parsed.y)}}
+    },
+    scales:{
+      x:{grid:{display:false}, ticks:{font:{family:"Plus Jakarta Sans"}}},
+      y:{grid:{color:"#eef2f0"}, ticks:{font:{family:"Plus Jakarta Sans"}, callback: v => fmt(v)}}
+    }
+  };
+}
+function barChartOpts(fmt){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tooltipStyle(), callbacks:{label: ctx => fmt(ctx.parsed.y)}}
+    },
+    scales:{
+      x:{grid:{display:false}, ticks:{font:{family:"Plus Jakarta Sans"}}},
+      y:{grid:{color:"#eef2f0"}, ticks:{font:{family:"Plus Jakarta Sans"}, callback: v => fmt(v)}}
+    }
+  };
+}
+function horizontalBarOpts(fmt){
+  return {
+    indexAxis:"y",
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{...tooltipStyle(), callbacks:{label: ctx => fmt(ctx.parsed.x)}}
+    },
+    scales:{
+      x:{grid:{color:"#eef2f0"}, ticks:{font:{family:"Plus Jakarta Sans"}, callback:v => fmt(v)}},
+      y:{grid:{display:false}, ticks:{font:{family:"Plus Jakarta Sans", size:12}, autoSkip:false}}
+    }
+  };
+}
+function doughnutOpts(){
+  return {
+    responsive:true, maintainAspectRatio:false,
+    cutout: "65%",
+    plugins:{
+      legend:{position:"bottom", labels:{font:{family:"Plus Jakarta Sans", size:12}, padding:14, usePointStyle:true, pointStyle:"circle"}},
+      tooltip:{...tooltipStyle(), callbacks:{
+        label: ctx => {
+          const total = ctx.dataset.data.reduce((s,v) => s+v, 0);
+          const pct = total ? (ctx.parsed/total*100).toFixed(1) : 0;
+          return ctx.label + ": " + fmtNum(ctx.parsed) + " (" + pct + "%)";
+        }
+      }}
+    }
+  };
+}
+function upsertChart(id, config){
+  if (charts[id]) charts[id].destroy();
+  const ctx = document.getElementById(id);
+  if (!ctx) return;
+  charts[id] = new Chart(ctx, config);
+}
+
+/* ============== UTIL ============== */
+function escapeHtml(s){
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;").replace(/'/g,"&#039;");
+}
+
+// Set Chart.js default font
+if (window.Chart) {
+  Chart.defaults.font.family = "Plus Jakarta Sans, system-ui, sans-serif";
+  Chart.defaults.color = "#3a4a44";
+}
+</script>
+</body>
+</html>
