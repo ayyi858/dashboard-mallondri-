@@ -234,6 +234,7 @@
     border-radius:var(--radius-sm);
     padding:16px;
   }
+  .chart-box.wide{grid-column:1 / -1}
   .chart-box h4{
     font-size:14px; font-weight:700;
     margin:0 0 12px;
@@ -241,6 +242,124 @@
   }
   .chart-wrap{position:relative; height:260px}
   .chart-wrap.tall{height:340px}
+  .trading-terminal{
+    display:grid;
+    grid-template-columns:minmax(0, 1fr) 310px;
+    border:1px solid var(--line);
+    border-radius:var(--radius-sm);
+    overflow:hidden;
+    background:#fff;
+  }
+  .trading-main{min-width:0}
+  .trading-topbar{
+    height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    padding:0 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .trading-symbol{display:flex; align-items:center; gap:9px; min-width:0}
+  .symbol-dot{width:12px; height:12px; border-radius:50%; background:var(--brand); box-shadow:0 0 0 4px var(--brand-soft)}
+  .symbol-name{font-weight:800; color:var(--ink); white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+  .symbol-meta{font-size:12px; color:var(--ink-3); white-space:nowrap}
+  .ohlc-strip{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    font-size:12px;
+    font-weight:700;
+    color:var(--ink-2);
+    white-space:nowrap;
+  }
+  .ohlc-strip .up{color:var(--brand)}
+  .ohlc-strip .down{color:var(--warn)}
+  .ohlc-strip .flat{color:var(--ink-3)}
+  .trading-chart-wrap{
+    position:relative;
+    height:520px;
+    background:#fff;
+  }
+  .price-marker{
+    position:absolute;
+    right:12px;
+    top:50%;
+    transform:translateY(-50%);
+    background:var(--brand);
+    color:#fff;
+    border-radius:4px;
+    padding:4px 7px;
+    font-size:12px;
+    font-weight:800;
+    pointer-events:none;
+  }
+  .trading-range{
+    height:44px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    padding:0 14px;
+    border-top:1px solid var(--line);
+    color:var(--ink-2);
+    font-size:13px;
+    font-weight:700;
+  }
+  .range-pill{padding:5px 8px; border-radius:6px}
+  .range-pill.active{background:var(--brand-soft); color:var(--brand)}
+  .trading-side{
+    border-left:1px solid var(--line);
+    background:#fbfcfb;
+    min-width:0;
+  }
+  .side-head{
+    height:48px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:0 14px;
+    border-bottom:1px solid var(--line);
+    font-weight:800;
+  }
+  .watchlist-head,
+  .watch-row{
+    display:grid;
+    grid-template-columns:1fr 92px 74px;
+    gap:8px;
+    align-items:center;
+    padding:9px 14px;
+  }
+  .watchlist-head{
+    color:var(--ink-3);
+    font-size:12px;
+    border-bottom:1px solid var(--line);
+  }
+  .watch-row{font-size:13px; border-bottom:1px solid #edf2ef}
+  .watch-row strong{display:block; color:var(--ink)}
+  .watch-row span{display:block; color:var(--ink-3); font-size:11px; margin-top:2px}
+  .watch-row .num{text-align:right; font-weight:700}
+  .watch-row .up{color:var(--brand)}
+  .watch-row .down{color:var(--warn)}
+  .watch-row .flat{color:var(--ink-3)}
+  .stock-card{
+    padding:16px 14px;
+    border-bottom:1px solid var(--line);
+  }
+  .stock-card h3{font-size:14px; margin:0 0 10px}
+  .stock-card .big{font-family:'Fraunces', serif; font-size:34px; font-weight:700; line-height:1}
+  .stock-card .move{font-size:14px; font-weight:800; margin-top:8px}
+  .stock-card .move.up{color:var(--brand)}
+  .stock-card .move.down{color:var(--warn)}
+  .stock-card .move.flat{color:var(--ink-3)}
+  .stock-news{
+    margin-top:14px;
+    background:#f0e9ff;
+    color:#2f235f;
+    border-radius:8px;
+    padding:10px;
+    font-size:12px;
+    line-height:1.45;
+  }
 
   /* ===== INSIGHT ===== */
   .insight-grid{
@@ -388,6 +507,54 @@
   .growth-up{color:var(--brand); font-weight:600}
   .growth-down{color:var(--warn); font-weight:600}
   .growth-flat{color:var(--ink-3)}
+  .market-month-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(210px, 1fr));
+    gap:12px;
+    margin-bottom:18px;
+  }
+  .month-ticker{
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+    padding:14px;
+    min-height:138px;
+    display:flex;
+    flex-direction:column;
+    justify-content:space-between;
+    box-shadow:0 1px 2px rgba(12,84,68,.03);
+  }
+  .month-ticker.up{border-left:4px solid var(--brand)}
+  .month-ticker.down{border-left:4px solid var(--warn)}
+  .month-ticker.flat{border-left:4px solid var(--ink-3)}
+  .ticker-head{display:flex; align-items:flex-start; justify-content:space-between; gap:10px}
+  .ticker-month{font-weight:800; letter-spacing:.02em; color:var(--ink)}
+  .ticker-badge{
+    font-size:11px;
+    font-weight:700;
+    padding:3px 7px;
+    border-radius:999px;
+    background:var(--brand-soft);
+    color:var(--brand);
+    white-space:nowrap;
+  }
+  .ticker-badge.down{background:var(--warn-soft); color:var(--warn)}
+  .ticker-badge.flat{background:#eef2f0; color:var(--ink-3)}
+  .ticker-price{font-family:'Fraunces', serif; font-size:24px; font-weight:700; color:var(--ink); margin-top:8px; line-height:1.1}
+  .ticker-change{font-size:13px; font-weight:800; margin-top:6px}
+  .ticker-change.up{color:var(--brand)}
+  .ticker-change.down{color:var(--warn)}
+  .ticker-change.flat{color:var(--ink-3)}
+  .ticker-meta{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:8px;
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px solid var(--line);
+  }
+  .ticker-meta span{display:block; font-size:10px; color:var(--ink-3); text-transform:uppercase; letter-spacing:.06em}
+  .ticker-meta strong{display:block; font-size:12px; color:var(--ink); margin-top:2px}
 
   /* ===== FOOTER ===== */
   footer{
@@ -404,6 +571,11 @@
     h1.display{font-size:24px}
     main{padding:16px}
     .upload-bar{padding:0 16px}
+    .trading-terminal{grid-template-columns:1fr}
+    .trading-side{border-left:none; border-top:1px solid var(--line)}
+    .trading-chart-wrap{height:390px}
+    .trading-topbar{height:auto; padding:12px; align-items:flex-start; flex-direction:column}
+    .ohlc-strip{flex-wrap:wrap}
     .filters-grid{grid-template-columns:repeat(2, 1fr)}
     .kpi-grid{grid-template-columns:repeat(2, 1fr)}
     .kpi-value{font-size:20px}
@@ -533,8 +705,49 @@
         <div>
           <div class="accent-line"></div>
           <h2 class="section-title">Performa Bulanan</h2>
-          <div class="section-sub">Tren omzet, transaksi, dan pelanggan dari waktu ke waktu</div>
+          <div class="section-sub">Ringkasan per bulan dengan perubahan dibanding bulan sebelumnya</div>
         </div>
+      </div>
+      <div class="market-month-grid" id="monthlyMarket"></div>
+      <div class="trading-terminal" style="margin-bottom:16px">
+        <div class="trading-main">
+          <div class="trading-topbar">
+            <div class="trading-symbol">
+              <div class="symbol-dot"></div>
+              <div class="symbol-name">MALLONDRI OMZET</div>
+              <div class="symbol-meta">1Bln · XLSX</div>
+            </div>
+            <div class="ohlc-strip" id="stockOhlc">O — H — L — C —</div>
+          </div>
+          <div class="trading-chart-wrap">
+            <canvas id="chartStockOmzet"></canvas>
+            <div class="price-marker" id="priceMarker">—</div>
+          </div>
+          <div class="trading-range">
+            <span class="range-pill">1Bln</span>
+            <span class="range-pill active">Semua</span>
+            <span class="range-pill">MoM</span>
+            <span class="range-pill">Omzet</span>
+          </div>
+        </div>
+        <aside class="trading-side">
+          <div class="side-head">
+            <span>Watchlist</span>
+            <span>+</span>
+          </div>
+          <div class="watchlist-head">
+            <span>Bulan</span>
+            <span class="num">Omzet</span>
+            <span class="num">%</span>
+          </div>
+          <div id="stockWatchlist"></div>
+          <div class="stock-card" id="stockSummary">
+            <h3>Statistik kunci</h3>
+            <div class="big">—</div>
+            <div class="move flat">Menunggu data</div>
+            <div class="stock-news">Candlestick memakai omzet bulan sebelumnya sebagai open dan omzet bulan berjalan sebagai close.</div>
+          </div>
+        </aside>
       </div>
       <div class="chart-grid">
         <div class="chart-box">
@@ -586,9 +799,9 @@
           <h2 class="section-title">Top 100 Pelanggan Paling Sering Order</h2>
           <div class="section-sub">Diurutkan berdasarkan jumlah transaksi unik. Klik header untuk sortir.</div>
         </div>
-        <button class="btn btn-ghost btn-sm" id="exportCSV">
+        <button class="btn btn-ghost btn-sm" id="exportExcel">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          Export CSV
+          Export Excel
         </button>
       </div>
 
@@ -1046,11 +1259,11 @@ function getFilters(){
   };
 }
 
-function filterNotas(){
+function filterNotas(options = {}){
   const f = getFilters();
   // Filter layanan butuh cek di NOTAS.layanan array
   return NOTAS.filter(n => {
-    if (f.bulan && n.bulan !== f.bulan) return false;
+    if (!options.ignoreMonth && f.bulan && n.bulan !== f.bulan) return false;
     if (f.outlet && n.outlet !== f.outlet) return false;
     if (f.jenis && n.jenis !== f.jenis) return false;
     if (f.bayar && n.bayar !== f.bayar) return false;
@@ -1078,9 +1291,11 @@ function filterRaw(filteredNotas){
 function applyFilters(){
   const fNotas = filterNotas();
   const fRaw = filterRaw(fNotas);
+  const monthlyBaseNotas = filterNotas({ignoreMonth:true});
+  const monthlyBaseRaw = filterRaw(monthlyBaseNotas);
 
   renderKPI(fNotas, fRaw);
-  renderMonthly(fNotas, fRaw);
+  renderMonthly(fNotas, fRaw, monthlyBaseNotas, monthlyBaseRaw);
   renderCustomers(fNotas);
   renderServices(fRaw, fNotas);
   renderStatus(fNotas);
@@ -1162,8 +1377,19 @@ function aggregateByMonth(notas, raw){
     .sort((a,b) => MONTH_ORDER.indexOf(a.bulan) - MONTH_ORDER.indexOf(b.bulan));
   // growth
   arr.forEach((m,i) => {
-    if (i===0){ m.growthOmzet=null; m.growthTrx=null; m.growthCust=null; return; }
+    if (i===0){
+      m.prevOmzet=null; m.prevTrx=null; m.prevCust=null;
+      m.deltaOmzet=null; m.deltaTrx=null; m.deltaCust=null;
+      m.growthOmzet=null; m.growthTrx=null; m.growthCust=null;
+      return;
+    }
     const prev = arr[i-1];
+    m.prevOmzet = prev.omzet;
+    m.prevTrx = prev.trx;
+    m.prevCust = prev.cust;
+    m.deltaOmzet = m.omzet - prev.omzet;
+    m.deltaTrx = m.trx - prev.trx;
+    m.deltaCust = m.cust - prev.cust;
     m.growthOmzet = prev.omzet ? (m.omzet-prev.omzet)/prev.omzet : null;
     m.growthTrx = prev.trx ? (m.trx-prev.trx)/prev.trx : null;
     m.growthCust = prev.cust ? (m.cust-prev.cust)/prev.cust : null;
@@ -1171,9 +1397,20 @@ function aggregateByMonth(notas, raw){
   return arr;
 }
 
-function renderMonthly(notas, raw){
+function renderMonthly(notas, raw, comparisonNotas = notas, comparisonRaw = raw){
   const months = aggregateByMonth(notas, raw);
+  const comparisonMonths = aggregateByMonth(comparisonNotas, comparisonRaw);
+  const comparisonMap = new Map(comparisonMonths.map(m => [m.bulan, m]));
+  months.forEach(m => {
+    const cmp = comparisonMap.get(m.bulan);
+    if (!cmp) return;
+    ["prevOmzet","prevTrx","prevCust","deltaOmzet","deltaTrx","deltaCust","growthOmzet","growthTrx","growthCust"].forEach(key => {
+      m[key] = cmp[key];
+    });
+  });
   const labels = months.map(m => m.bulan);
+
+  renderStockChart(months);
 
   upsertChart("chartOmzet", {
     type: "line",
@@ -1243,6 +1480,8 @@ function renderMonthly(notas, raw){
     }
   });
 
+  renderMonthlyMarket(months);
+
   // Tabel performa bulanan
   const tbody = document.querySelector("#monthlyTable tbody");
   tbody.innerHTML = months.map(m => {
@@ -1265,10 +1504,128 @@ function renderMonthly(notas, raw){
 }
 
 function formatGrowth(v){
-  if (v === null || v === undefined || !isFinite(v)) return {txt:"—", cls:"growth-flat"};
+  if (v === null || v === undefined || !isFinite(v)) return {txt:"Awal", cls:"growth-flat"};
   const cls = v > 0.001 ? "growth-up" : v < -0.001 ? "growth-down" : "growth-flat";
   const arrow = v > 0.001 ? "▲" : v < -0.001 ? "▼" : "—";
   return {txt: arrow + " " + fmtPct(v).replace("+",""), cls};
+}
+
+function marketTone(v){
+  if (v === null || v === undefined || !isFinite(v) || Math.abs(v) <= 0.001) return "flat";
+  return v > 0 ? "up" : "down";
+}
+
+function renderMonthlyMarket(months){
+  const wrap = document.getElementById("monthlyMarket");
+  if (!wrap) return;
+  wrap.innerHTML = months.map(m => {
+    const tone = marketTone(m.growthOmzet);
+    const arrow = tone === "up" ? "▲" : tone === "down" ? "▼" : "—";
+    const pct = m.growthOmzet === null || m.growthOmzet === undefined || !isFinite(m.growthOmzet)
+      ? "Awal data"
+      : fmtPct(m.growthOmzet).replace("+","");
+    const delta = m.deltaOmzet === null || m.deltaOmzet === undefined || !isFinite(m.deltaOmzet)
+      ? "Belum ada pembanding"
+      : (m.deltaOmzet >= 0 ? "+" : "-") + fmtIDRShort(Math.abs(m.deltaOmzet));
+    const badge = tone === "up" ? "Naik" : tone === "down" ? "Turun" : "Stabil";
+    return `
+      <div class="month-ticker ${tone}">
+        <div>
+          <div class="ticker-head">
+            <div class="ticker-month">${escapeHtml(m.bulan)}</div>
+            <div class="ticker-badge ${tone}">${badge}</div>
+          </div>
+          <div class="ticker-price">${fmtIDRShort(m.omzet)}</div>
+          <div class="ticker-change ${tone}">${arrow} ${pct} <span style="font-weight:600">${delta}</span></div>
+        </div>
+        <div class="ticker-meta">
+          <div><span>TRX</span><strong>${fmtNum(m.trx)}</strong></div>
+          <div><span>Cust</span><strong>${fmtNum(m.cust)}</strong></div>
+          <div><span>Avg</span><strong>${fmtIDRShort(m.avg)}</strong></div>
+        </div>
+      </div>
+    `;
+  }).join("") || `<div class="month-ticker flat"><div class="ticker-month">Tidak ada data</div><div class="ticker-change flat">Sesuaikan filter untuk melihat performa bulanan.</div></div>`;
+}
+
+function renderStockChart(months){
+  const summary = document.getElementById("stockSummary");
+  if (!months.length){
+    if (summary) summary.innerHTML = `<strong>—</strong><span class="flat">Tidak ada data</span>`;
+    upsertChart("chartStockOmzet", {
+      type:"line",
+      data:{labels:[], datasets:[{data:[]}]},
+      options:{responsive:true, maintainAspectRatio:false}
+    });
+    return;
+  }
+
+  const last = months[months.length - 1];
+  const tone = marketTone(last.growthOmzet);
+  const arrow = tone === "up" ? "▲" : tone === "down" ? "▼" : "—";
+  const pct = last.growthOmzet === null || last.growthOmzet === undefined || !isFinite(last.growthOmzet)
+    ? "Awal data"
+    : fmtPct(last.growthOmzet).replace("+","");
+  const delta = last.deltaOmzet === null || last.deltaOmzet === undefined || !isFinite(last.deltaOmzet)
+    ? ""
+    : " · " + (last.deltaOmzet >= 0 ? "+" : "-") + fmtIDRShort(Math.abs(last.deltaOmzet));
+  if (summary) {
+    summary.innerHTML = `<strong>${fmtIDRShort(last.omzet)}</strong><span class="${tone}">${arrow} ${pct}${delta}</span>`;
+  }
+
+  upsertChart("chartStockOmzet", {
+    type: "line",
+    data: {
+      labels: months.map(m => m.bulan),
+      datasets: [{
+        label: "Omzet",
+        data: months.map(m => m.omzet),
+        borderColor: "#0c5444",
+        backgroundColor: "rgba(12,84,68,.10)",
+        fill: true,
+        tension: .28,
+        pointRadius: 5,
+        pointHoverRadius: 7,
+        pointBackgroundColor: months.map(m => {
+          const t = marketTone(m.growthOmzet);
+          return t === "down" ? "#c0392b" : t === "up" ? "#0c5444" : "#6b7975";
+        }),
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2,
+        segment: {
+          borderColor: ctx => {
+            const y0 = ctx.p0.parsed.y;
+            const y1 = ctx.p1.parsed.y;
+            return y1 < y0 ? "#c0392b" : y1 > y0 ? "#0c5444" : "#6b7975";
+          }
+        }
+      }]
+    },
+    options: {
+      responsive:true,
+      maintainAspectRatio:false,
+      interaction:{mode:"index", intersect:false},
+      plugins:{
+        legend:{display:false},
+        tooltip:{...tooltipStyle(), callbacks:{
+          title: items => items[0]?.label || "",
+          label: ctx => "Omzet: " + fmtIDR(ctx.parsed.y),
+          afterLabel: ctx => {
+            const m = months[ctx.dataIndex];
+            const g = formatGrowth(m.growthOmzet).txt;
+            const d = m.deltaOmzet === null || m.deltaOmzet === undefined || !isFinite(m.deltaOmzet)
+              ? "Belum ada pembanding"
+              : "Selisih: " + (m.deltaOmzet >= 0 ? "+" : "-") + fmtIDR(Math.abs(m.deltaOmzet));
+            return ["Growth: " + g, d, "TRX: " + fmtNum(m.trx)];
+          }
+        }}
+      },
+      scales:{
+        x:{grid:{display:false}, ticks:{font:{family:"Plus Jakarta Sans"}}},
+        y:{grid:{color:"#eef2f0"}, ticks:{font:{family:"Plus Jakarta Sans"}, callback:v => fmtIDRShort(v)}}
+      }
+    }
+  });
 }
 
 /* ============== CUSTOMERS ============== */
@@ -1461,30 +1818,29 @@ document.querySelectorAll("#custTable th.sortable").forEach(th => {
 });
 
 /* ============== EXPORT ============== */
-document.getElementById("exportCSV").addEventListener("click", () => {
+document.getElementById("exportExcel").addEventListener("click", () => {
   const list = CUSTOMERS.slice(0, 100);
-  const headers = ["Rank","Customer","No Telp","Alamat","Jumlah Transaksi","Total Omzet","Total KG","Total Item","Rata-rata Omzet","Transaksi Terakhir","Status Loyalitas"];
-  const rows = list.map(c => [
-    c.rank,
-    `"${(c.name||"").replace(/"/g,'""')}"`,
-    `"${(c.noTelp||"").replace(/"/g,'""')}"`,
-    `"${(c.alamat||"").replace(/"/g,'""')}"`,
-    c.trx,
-    Math.round(c.omzet),
-    (Math.round(c.kg*100)/100),
-    c.item,
-    Math.round(c.avg),
-    c.last ? c.last.toISOString().slice(0,10) : "",
-    c.status
-  ].join(","));
-  const csv = "\uFEFF" + headers.join(",") + "\n" + rows.join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8;"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "top_100_pelanggan_mallondri.csv";
-  a.click();
-  URL.revokeObjectURL(url);
+  const rows = list.map(c => ({
+    "Rank": c.rank,
+    "Customer": c.name || "",
+    "No Telp": c.noTelp || "",
+    "Alamat": c.alamat || "",
+    "Jumlah Transaksi": c.trx,
+    "Total Omzet": Math.round(c.omzet),
+    "Total KG": Math.round(c.kg * 100) / 100,
+    "Total Item": c.item,
+    "Rata-rata Omzet": Math.round(c.avg),
+    "Transaksi Terakhir": c.last ? c.last.toISOString().slice(0,10) : "",
+    "Status Loyalitas": c.status
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows);
+  ws["!cols"] = [
+    {wch:8}, {wch:28}, {wch:18}, {wch:42}, {wch:18},
+    {wch:16}, {wch:12}, {wch:12}, {wch:18}, {wch:18}, {wch:18}
+  ];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Top 100 Pelanggan");
+  XLSX.writeFile(wb, "top_100_pelanggan_mallondri.xlsx");
 });
 
 /* ============== SERVICES ============== */
